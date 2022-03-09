@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/src/material/divider.dart';
 import 'package:flutter/src/material/data_table.dart';
+import 'loginScreen.dart';
 
 class AdminScreen extends StatefulWidget {
 
@@ -16,7 +17,9 @@ class _AdminScreenState extends State<AdminScreen> {
       width: double.infinity,
       child: RaisedButton(
         elevation: 5,
-        onPressed: () => print("Logout pressed"),
+        onPressed: () {
+          Navigator.push(context, MaterialPageRoute(builder: (context) => const LoginScreen()));
+        },
         padding: EdgeInsets.all(10),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(15),
@@ -38,6 +41,7 @@ class _AdminScreenState extends State<AdminScreen> {
     return Scaffold(
       backgroundColor: Colors.grey.shade900,
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: const Text(
           'Users Data (Admin)',
           style: TextStyle(

@@ -7,7 +7,9 @@ import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 import 'package:syncfusion_flutter_core/theme.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'styles.dart';
-
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'data.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 // declare global variables
 var sensorData = '1';
@@ -24,6 +26,10 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+
+  User? user = FirebaseAuth.instance.currentUser;
+  UserData loggedInUser = UserData();
+
   final ScrollController _scrollController = ScrollController();
   List<String> items = [];
   bool loading = false, allLoaded = false;
@@ -45,6 +51,15 @@ class _HomeScreenState extends State<HomeScreen> {
     });
 
     super.initState();
+
+    FirebaseFirestore.instance
+        .collection("users")
+        .doc(user!.uid)
+        .get()
+        .then((value) {
+      this.loggedInUser = UserData.fromMap(value.data());
+      setState(() {});
+    });
 
   }
 
@@ -160,6 +175,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       backgroundColor: Colors.grey.shade900,
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: const Text(
           "App Name",
           style: TextStyle(
@@ -170,7 +186,7 @@ class _HomeScreenState extends State<HomeScreen> {
         backgroundColor: Colors.green.shade900,
         actions: <Widget>[
           IconButton(
-            icon: const Icon(Icons.navigate_next),
+            icon: const Icon(Icons.arrow_forward),
             tooltip: 'Activity Log',
             onPressed: () {
               Navigator.push(context, MaterialPageRoute<void>(
@@ -192,13 +208,13 @@ class _HomeScreenState extends State<HomeScreen> {
                       children: [
                         SizedBox(height: 10),
                         Text(
-                          'Blind guy',
+                          '${loggedInUser.username}',
                           textAlign: TextAlign.center,
                           style: profileUserStyle,
                         ),
                         SizedBox(height: 5),
                         Text(
-                          'User #: 0000001',
+                          'UID: ${user?.uid}',
                           textAlign: TextAlign.center,
                           style: profileIdStyle,
                         ),
