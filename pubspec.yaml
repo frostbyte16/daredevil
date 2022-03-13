@@ -38,6 +38,12 @@ dependencies:
   cupertino_icons: ^1.0.2
   flutter_tts: ^3.3.3
 
+  # internet connection checker
+  connectivity_plus: ^1.0.4
+  internet_connection_checker: ^0.0.1+1
+
+  overlay_support: ^1.2.1
+
   # Firebase auth and firebase core
   firebase_core: ^1.10.2
   firebase_auth: ^3.3.0

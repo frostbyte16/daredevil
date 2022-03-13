@@ -1,5 +1,8 @@
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/material/divider.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'loginScreen.dart';
 import 'package:flutter/widgets.dart';
 import 'package:web_socket_channel/io.dart';
@@ -34,6 +37,10 @@ class _HomeScreenState extends State<HomeScreen> {
   List<String> items = [];
   bool loading = false, allLoaded = false;
 
+  // connectivity result variables
+  bool hasInternet = false;
+  ConnectivityResult connResult = ConnectivityResult.none;
+
   // get sensor data
   // late bool ledstatus; //boolean value to track LED status, if its ON or OFF
   late IOWebSocketChannel channel;
@@ -41,6 +48,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void initState() {
+    // get data from microcontroller
     super.initState();
     _sensorData = getSensorData();
     //ledstatus = false; //initially ledstatus is off so its FALSE
@@ -50,8 +58,8 @@ class _HomeScreenState extends State<HomeScreen> {
       channelconnect(); //connect to WebSocket wth NodeMCU
     });
 
+    // get logged in user data
     super.initState();
-
     FirebaseFirestore.instance
         .collection("users")
         .doc(user!.uid)
@@ -61,6 +69,18 @@ class _HomeScreenState extends State<HomeScreen> {
       setState(() {});
     });
 
+    // check internet connectivity
+    InternetConnectionChecker().onStatusChange.listen((status) {
+      final hasInternet = status == InternetConnectionStatus.connected;
+
+      setState(() => this.hasInternet = hasInternet);
+
+      if(this.hasInternet==true){
+        Fluttertoast.showToast(msg: "Connected to the Internet");
+      } else{
+        Fluttertoast.showToast(msg: "No Internet Connection");
+      }
+    });
   }
 
   @override
@@ -85,13 +105,10 @@ class _HomeScreenState extends State<HomeScreen> {
         var upSensor = splitted[2];
         var downSensor = splitted[3];
 
-
         var newLeft = double.parse(leftSensor);
         var newRight = double.parse(rightSensor);
         var newUp = double.parse(upSensor);
         var newDown = double.parse(downSensor);
-
-
 
         // if (newLeft > newRight){
         //   tts.speak("Object detected on the left");
@@ -101,10 +118,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
         // determining direction of object
         // one algo to determine X location (left, mid, right)
-        // one algo to determine Y location (up, front, down)
-
-
-
+        // one algo to determine Y location (upper, mid, lower)
+        // UL   UM   UR
+        // L    M    R
+        // LL   LM   LR
 
 
         dataArray.add(sData(now.toString(),leftSensor,rightSensor));
@@ -444,3 +461,6 @@ class sData {
 List<sData> getSensorData() {
   return dataArray;
 }
+
+
+
