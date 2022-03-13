@@ -17,14 +17,14 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return  MaterialApp(
+    return MaterialApp(
       title: 'ThesisApp',
       debugShowCheckedModeBanner: false,
       home: FutureBuilder(
         future: _initializeFirebase(),
         builder: (context, snapshot){
           if(snapshot.connectionState == ConnectionState.done){
-            return const LoginScreen();
+            return LoginScreen();
           }
           return const Center(
             child: CircularProgressIndicator(),

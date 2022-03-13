@@ -15,7 +15,6 @@ class UserData {
   }
 
   // send data to server
-
   Map<String, dynamic> toMap() {
     return {
       'uid': uid,

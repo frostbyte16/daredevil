@@ -4,6 +4,7 @@ import 'package:flutter/src/material/data_table.dart';
 import 'loginScreen.dart';
 
 class AdminScreen extends StatefulWidget {
+  const AdminScreen({Key? key}) : super(key: key);
 
   @override
   _AdminScreenState createState() => _AdminScreenState();
@@ -13,19 +14,19 @@ class _AdminScreenState extends State<AdminScreen> {
 
   Widget buildLogoutBtn() {
     return Container(
-      padding: EdgeInsets.symmetric(vertical: 3, horizontal: 150),
+      padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 150),
       width: double.infinity,
       child: RaisedButton(
         elevation: 5,
         onPressed: () {
           Navigator.push(context, MaterialPageRoute(builder: (context) => const LoginScreen()));
         },
-        padding: EdgeInsets.all(10),
+        padding: const EdgeInsets.all(10),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(15),
         ),
         color: Colors.green.shade900,
-        child: Text(
+        child: const Text(
           'Logout',
           style: TextStyle(
               color: Colors.white,

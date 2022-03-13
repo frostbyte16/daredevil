@@ -13,6 +13,7 @@ import 'styles.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'data.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 // declare global variables
 var sensorData = '1';
@@ -32,6 +33,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
   User? user = FirebaseAuth.instance.currentUser;
   UserData loggedInUser = UserData();
+
+  // keep user logged in
+  late SharedPreferences prefdata;
+  late String useremail;
 
   final ScrollController _scrollController = ScrollController();
   List<String> items = [];
@@ -69,6 +74,9 @@ class _HomeScreenState extends State<HomeScreen> {
       setState(() {});
     });
 
+    // keep user logged in
+    initial();
+
     // check internet connectivity
     InternetConnectionChecker().onStatusChange.listen((status) {
       final hasInternet = status == InternetConnectionStatus.connected;
@@ -80,6 +88,13 @@ class _HomeScreenState extends State<HomeScreen> {
       } else{
         Fluttertoast.showToast(msg: "No Internet Connection");
       }
+    });
+  }
+
+  void initial() async {
+    prefdata = await SharedPreferences.getInstance();
+    setState(() {
+      useremail = prefdata.getString('email')!;
     });
   }
 
@@ -166,15 +181,16 @@ class _HomeScreenState extends State<HomeScreen> {
   // system ui
   Widget buildLogoutBtn() {
     return Container(
-      padding: EdgeInsets.symmetric(vertical: 3),
+      padding: const EdgeInsets.symmetric(vertical: 3),
       alignment: Alignment.center,
       width: double.infinity,
       child: RaisedButton(
         elevation: 5,
-        onPressed: () {
-          Navigator.push(context, MaterialPageRoute(builder: (context) => LoginScreen()));
+        onPressed: () async {
+          prefdata.setBool('login', true);
+          Navigator.push(context, MaterialPageRoute(builder: (context) => const LoginScreen()));
         },
-        padding: EdgeInsets.all(10),
+        padding: const EdgeInsets.all(10),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
         ),
@@ -223,21 +239,21 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     body: Column( //User Activity Log
                       children: [
-                        SizedBox(height: 10),
+                        const SizedBox(height: 10),
                         Text(
                           '${loggedInUser.username}',
                           textAlign: TextAlign.center,
                           style: profileUserStyle,
                         ),
-                        SizedBox(height: 5),
+                        const SizedBox(height: 5),
                         Text(
                           'UID: ${user?.uid}',
                           textAlign: TextAlign.center,
                           style: profileIdStyle,
                         ),
-                        SizedBox(height: 5),
+                        const SizedBox(height: 5),
                         buildLogoutBtn(),
-                        Divider(
+                        const Divider(
                           height: 25,
                           color: Colors.white,
                           thickness: 1,
@@ -313,7 +329,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Text(
                     //'The sensors are detecting objects. Please wait...',
                     'Left sensor detected object at ${sensorData} cm.',
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontFamily: 'Tahoma',
                     ),
                   ),
@@ -355,7 +371,7 @@ Widget dataGrid (BuildContext context) {
           label: Container(
               padding: EdgeInsets.symmetric(horizontal: 16.0),
               alignment: Alignment.centerRight,
-              child: Text(
+              child: const Text(
                 'Time',
                 style: dataGridHeaderStyle,
                 overflow: TextOverflow.ellipsis,
@@ -363,9 +379,9 @@ Widget dataGrid (BuildContext context) {
       GridColumn(
           columnName: 'sensor1',
           label: Container(
-              padding: EdgeInsets.symmetric(horizontal: 16.0),
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
               alignment: Alignment.centerLeft,
-              child: Text(
+              child: const Text(
                 'Sensor 1',
                 style: dataGridHeaderStyle,
                 overflow: TextOverflow.ellipsis,
@@ -375,7 +391,7 @@ Widget dataGrid (BuildContext context) {
           label: Container(
               padding: EdgeInsets.symmetric(horizontal: 16.0),
               alignment: Alignment.centerLeft,
-              child: Text(
+              child: const Text(
                 'Sensor 2',
                 style: dataGridHeaderStyle,
                 overflow: TextOverflow.ellipsis,
@@ -405,7 +421,7 @@ class SensorDataSource extends DataGridSource{
           return Container(
               alignment: (dataGridCell.columnName == 'time')? Alignment.centerRight
                   : Alignment.centerLeft,
-              padding: EdgeInsets.symmetric(horizontal: 16.0),
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Text(
                 dataGridCell.value.toString(),
                 overflow: TextOverflow.ellipsis,

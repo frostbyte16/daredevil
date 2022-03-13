@@ -6,6 +6,7 @@ import 'signupScreen.dart';
 import 'homeScreen.dart';
 import 'adminScreen.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -15,8 +16,6 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-
-  bool isRememberMe = false;
 
   // form key
   final _formKey = GlobalKey<FormState>();
@@ -28,8 +27,38 @@ class _LoginScreenState extends State<LoginScreen> {
   // firebase
   final _auth = FirebaseAuth.instance;
 
-  // string for displaying the error Message
+  // string for displaying the error message
   String? errorMessage;
+
+  // keep user logged in
+  late SharedPreferences prefdata;
+  late bool newuser;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    userLoginCheck();
+  }
+
+  // keep user logged in
+  void userLoginCheck() async {
+    prefdata = await SharedPreferences.getInstance();
+    newuser = (prefdata.getBool('login') ?? true);
+    print(newuser);
+
+    if (newuser == false) {
+      Navigator.pushReplacement(context, new MaterialPageRoute(builder: (context) => HomeScreen()));
+    }
+  }
+
+  @override
+  void dispose() {
+    // clean up the controller when the widget is disposed
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -114,7 +143,15 @@ class _LoginScreenState extends State<LoginScreen> {
         padding: const EdgeInsets.fromLTRB(20, 15, 20, 15),
         minWidth: MediaQuery.of(context).size.width,
         onPressed: () {
-          signIn(emailController.text, passwordController.text);
+          String useremail = emailController.text;
+          String userpassword = passwordController.text;
+
+          if (useremail != '' && userpassword != '') {
+            print('Successful.');
+            prefdata.setBool('login', false);
+            prefdata.setString('email', useremail);
+            signIn(emailController.text, passwordController.text);
+          }
         },
         child: const Text(
           "Sign In",
@@ -204,16 +241,17 @@ class _LoginScreenState extends State<LoginScreen> {
           Fluttertoast.showToast(msg: "Login successful."),
           Navigator.of(context).pushReplacement(
               MaterialPageRoute(builder: (context) => HomeScreen())),
+
           if (email == 'admin@admin.com') {
             Navigator.of(context).pushReplacement(
                 MaterialPageRoute(builder: (context) => AdminScreen())),
           }
+
         });
       } on FirebaseAuthException catch (error) {
         switch (error.code) {
           case "invalid-email":
             errorMessage = "Your email address appears to be malformed.";
-
             break;
           case "wrong-password":
             errorMessage = "Your password is incorrect.";
