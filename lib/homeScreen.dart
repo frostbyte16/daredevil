@@ -20,7 +20,9 @@ var sensorData = '1';
 List<sData> dataArray = [];
 var index = 0;
 final now = DateTime.now();
-var dirX, dirY;
+var dirX, dirY, direction, distance;
+var leftSensor, rightSensor, upSensor, downSensor, lidarSensor, splitted;
+var newLeft, newRight, newUp, newDown, newLidar;
 
 final FlutterTts tts = FlutterTts();
 
@@ -114,18 +116,24 @@ class _HomeScreenState extends State<HomeScreen> {
 
         // separating received sensor data
 
-        final splitted = sensorData.split(',');
-        var leftSensor = splitted[0];
-        var rightSensor = splitted[1];
-        var upSensor = splitted[2];
-        var downSensor = splitted[3];
+        splitted = sensorData.split(',');
+        leftSensor = splitted[0];
+        rightSensor = splitted[1];
+        upSensor = splitted[0]; // change to 2 later on
+        downSensor = splitted[1]; // change to 3 later on
+        lidarSensor = splitted[0]; // change to 4 later on
 
-        var newLeft = double.parse(leftSensor);
-        var newRight = double.parse(rightSensor);
-        var newUp = double.parse(upSensor);
-        var newDown = double.parse(downSensor);
+        newLeft = double.parse(leftSensor);
+        newRight = double.parse(rightSensor);
+        newUp = double.parse(upSensor);
+        newDown = double.parse(downSensor);
+        newLidar = double.parse(lidarSensor);
 
-        // if (newLeft > newRight){
+        // test variables
+        distance = (newLeft+newRight)/2;
+        direction = "Upper Left";
+
+        // if (newLeft < newRight){
         //   tts.speak("Object detected on the left");
         // } else {
         //   tts.speak("Object detected on the right");
@@ -139,10 +147,15 @@ class _HomeScreenState extends State<HomeScreen> {
         // LL   LM   LR
 
 
-        dataArray.add(sData(now.toString(),leftSensor,rightSensor));
+        dataArray.add(sData(now.toString(),distance,direction,leftSensor,rightSensor,upSensor,downSensor,lidarSensor));
         _time.add(now.toString());
+        _distance.add(distance);
+        _direction.add(direction);
         _sensor1.add(leftSensor);
         _sensor2.add(rightSensor);
+        _sensor3.add(upSensor);
+        _sensor4.add(downSensor);
+        _lidar.add(lidarSensor);
 
         setState(() {
           dataArray.toSet();
@@ -359,6 +372,7 @@ Future<Null>getRefresh() async{
 List<sData> _sensorData = <sData>[];
 
 // create datagrid widget
+// datagrid widget here is for admin not users
 Widget dataGrid (BuildContext context) {
   return SfDataGrid(
     allowPullToRefresh: true,
@@ -373,6 +387,26 @@ Widget dataGrid (BuildContext context) {
               alignment: Alignment.centerRight,
               child: const Text(
                 'Time',
+                style: dataGridHeaderStyle,
+                overflow: TextOverflow.ellipsis,
+              ))),
+      GridColumn(
+          columnName: 'distance',
+          label: Container(
+              padding: EdgeInsets.symmetric(horizontal: 16.0),
+              alignment: Alignment.centerLeft,
+              child: const Text(
+                'Distance',
+                style: dataGridHeaderStyle,
+                overflow: TextOverflow.ellipsis,
+              ))),
+      GridColumn(
+          columnName: 'direction',
+          label: Container(
+              padding: EdgeInsets.symmetric(horizontal: 16.0),
+              alignment: Alignment.centerLeft,
+              child: const Text(
+                'Direction',
                 style: dataGridHeaderStyle,
                 overflow: TextOverflow.ellipsis,
               ))),
@@ -393,6 +427,36 @@ Widget dataGrid (BuildContext context) {
               alignment: Alignment.centerLeft,
               child: const Text(
                 'Sensor 2',
+                style: dataGridHeaderStyle,
+                overflow: TextOverflow.ellipsis,
+              ))),
+      GridColumn(
+          columnName: 'sensor3',
+          label: Container(
+              padding: EdgeInsets.symmetric(horizontal: 16.0),
+              alignment: Alignment.centerLeft,
+              child: const Text(
+                'Sensor 3',
+                style: dataGridHeaderStyle,
+                overflow: TextOverflow.ellipsis,
+              ))),
+      GridColumn(
+          columnName: 'sensor4',
+          label: Container(
+              padding: EdgeInsets.symmetric(horizontal: 16.0),
+              alignment: Alignment.centerLeft,
+              child: const Text(
+                'Sensor 4',
+                style: dataGridHeaderStyle,
+                overflow: TextOverflow.ellipsis,
+              ))),
+      GridColumn(
+          columnName: 'lidar',
+          label: Container(
+              padding: EdgeInsets.symmetric(horizontal: 16.0),
+              alignment: Alignment.centerLeft,
+              child: const Text(
+                'LiDAR',
                 style: dataGridHeaderStyle,
                 overflow: TextOverflow.ellipsis,
               ))),
@@ -454,24 +518,37 @@ class SensorDataSource extends DataGridSource{
     for (int i = startIndex; i < endIndex; i++) {
       sensorData.add(sData(
         _time[index],
+        _distance[index],
+        _direction[index],
         _sensor1[index],
         _sensor2[index],
+        _sensor3[index],
+        _sensor4[index],
+        _lidar[index],
       ));
     }
   }
 }
 
 List<String> _time = <String>[];
-
+List<String> _distance = <String>[];
+List<String> _direction = <String>[];
 List<String> _sensor1 = <String>[];
-
 List<String> _sensor2 = <String>[];
+List<String> _sensor3 = <String>[];
+List<String> _sensor4 = <String>[];
+List<String> _lidar = <String>[];
 
 class sData {
-  sData(this.time, this.sensor1, this.sensor2);
+  sData(this.time, this.distance, this. direction,this.sensor1, this.sensor2, this.sensor3, this.sensor4, this.lidar);
   String time;
+  String distance;
+  String direction;
   String sensor1;
   String sensor2;
+  String sensor3;
+  String sensor4;
+  String lidar;
 }
 
 List<sData> getSensorData() {
