@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 
-const profileUserStyle = TextStyle(
-  color: Colors.white,
-  fontFamily: 'Roboto Light',
-  fontSize: 18,
+const btnStyle = TextStyle(
+    color: Colors.white,
+    fontFamily: 'Tahoma'
 );
 
 const profileIdStyle = TextStyle(
@@ -13,9 +12,10 @@ const profileIdStyle = TextStyle(
   fontStyle: FontStyle.italic,
 );
 
-const btnStyle = TextStyle(
-    color: Colors.white,
-    fontFamily: 'Tahoma'
+const profileUserStyle = TextStyle(
+  color: Colors.white,
+  fontFamily: 'Roboto Light',
+  fontSize: 18,
 );
 
 const dataGridHeaderStyle = TextStyle(
@@ -29,4 +29,32 @@ const dataGridDataStyle = TextStyle(
   color: Colors.white,
   fontFamily: 'Roboto Light',
   fontSize: 11,
+);
+
+const headerStyle = TextStyle(
+  fontFamily: 'Bebas Neue',
+  fontSize: 25,
+);
+
+const hoverStyle = TextStyle(
+  fontFamily: 'Tahoma',
+);
+
+const signInStyle = TextStyle(
+    fontSize: 20,
+    fontFamily: 'Bebas Neue',
+    color: Colors.white,
+    letterSpacing: 3,
+    fontWeight: FontWeight.bold,
+);
+
+final createStyle = TextStyle(
+    color: Colors.blue.shade700,
+    fontWeight: FontWeight.bold,
+    fontFamily: 'Tahoma',
+);
+
+const accountStyle = TextStyle(
+    fontFamily: 'Tahoma',
+    color: Colors.white,
 );

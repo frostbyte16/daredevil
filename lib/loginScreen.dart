@@ -1,12 +1,13 @@
 import 'dart:core';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+//import 'package:flutter/services.dart';
 import 'signupScreen.dart';
 import 'homeScreen.dart';
 import 'adminScreen.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'styles.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -96,9 +97,7 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
         hintText: 'Email',
       ),
-      style: const TextStyle(
-          fontFamily: 'Tahoma'
-      ),
+      style: hoverStyle,
     );
 
     // password field
@@ -129,9 +128,7 @@ class _LoginScreenState extends State<LoginScreen> {
           borderRadius: BorderRadius.circular(10),
         ),
       ),
-      style: const TextStyle(
-          fontFamily: 'Tahoma'
-      ),
+      style: hoverStyle,
     );
 
     // login button
@@ -156,13 +153,7 @@ class _LoginScreenState extends State<LoginScreen> {
         child: const Text(
           "Sign In",
           textAlign: TextAlign.center,
-          style: TextStyle(
-              fontSize: 20,
-              fontFamily: 'Bebas Neue',
-              color: Colors.white,
-              letterSpacing: 3,
-              fontWeight: FontWeight.bold
-          ),
+          style: signInStyle,
         ),
       ),
     );
@@ -199,10 +190,8 @@ class _LoginScreenState extends State<LoginScreen> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
                           const Text("Don't have an account? ",
-                            style: TextStyle(
-                                fontFamily: 'Tahoma',
-                                color: Colors.white
-                            ),),
+                            style: accountStyle,
+                          ),
                           GestureDetector(
                             onTap: () {
                               Navigator.push(
@@ -213,11 +202,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             },
                             child: Text(
                               "Create one",
-                              style: TextStyle(
-                                  color: Colors.blue.shade700,
-                                  fontWeight: FontWeight.bold,
-                                  fontFamily: 'Tahoma'
-                              ),
+                              style: createStyle,
                             ),
                           )
                         ])

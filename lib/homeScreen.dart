@@ -223,11 +223,8 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         title: const Text(
-          "App Name",
-          style: TextStyle(
-            fontFamily: 'Bebas Neue',
-            fontSize: 25,
-          ),
+          "Komori",
+          style: headerStyle,
         ),
         backgroundColor: Colors.green.shade900,
         actions: <Widget>[
@@ -242,11 +239,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     appBar: AppBar(
                       title: const Text(
                         'User Activity Log',
-                        style: TextStyle(
-                          fontFamily: 'Bebas Neue',
-                          color: Colors.white,
-                          fontSize: 25,
-                        ),
+                        style: headerStyle,
                       ),
                       backgroundColor: Colors.green.shade900,
                     ),
@@ -342,9 +335,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Text(
                     //'The sensors are detecting objects. Please wait...',
                     'Left sensor detected object at ${sensorData} cm.',
-                    style: const TextStyle(
-                      fontFamily: 'Tahoma',
-                    ),
+                    style: hoverStyle,
                   ),
                   margin: const EdgeInsets.only(left: 30, right: 30, bottom: 60),
                   decoration: BoxDecoration(
