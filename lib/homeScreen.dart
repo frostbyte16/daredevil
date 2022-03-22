@@ -8,12 +8,8 @@ import 'package:flutter/widgets.dart';
 import 'package:web_socket_channel/io.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 import 'package:syncfusion_flutter_core/theme.dart';
-import 'package:flutter_tts/flutter_tts.dart';
 import 'styles.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'data.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+
 
 // declare global variables
 var sensorData = '1';
@@ -24,22 +20,12 @@ var dirX, dirY, direction, distance;
 var leftSensor, rightSensor, upSensor, downSensor, lidarSensor, splitted;
 var newLeft, newRight, newUp, newDown, newLidar;
 
-final FlutterTts tts = FlutterTts();
-
 class HomeScreen extends StatefulWidget {
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-
-  User? user = FirebaseAuth.instance.currentUser;
-  UserData loggedInUser = UserData();
-
-  // keep user logged in
-  late SharedPreferences prefdata;
-  late String useremail;
-
   final ScrollController _scrollController = ScrollController();
   List<String> items = [];
   bool loading = false, allLoaded = false;
@@ -55,7 +41,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void initState() {
-    // get data from microcontroller
     super.initState();
     _sensorData = getSensorData();
     //ledstatus = false; //initially ledstatus is off so its FALSE
@@ -65,19 +50,7 @@ class _HomeScreenState extends State<HomeScreen> {
       channelconnect(); //connect to WebSocket wth NodeMCU
     });
 
-    // get logged in user data
     super.initState();
-    FirebaseFirestore.instance
-        .collection("users")
-        .doc(user!.uid)
-        .get()
-        .then((value) {
-      this.loggedInUser = UserData.fromMap(value.data());
-      setState(() {});
-    });
-
-    // keep user logged in
-    initial();
 
     // check internet connectivity
     InternetConnectionChecker().onStatusChange.listen((status) {
@@ -91,14 +64,10 @@ class _HomeScreenState extends State<HomeScreen> {
         Fluttertoast.showToast(msg: "No Internet Connection");
       }
     });
+
   }
 
-  void initial() async {
-    prefdata = await SharedPreferences.getInstance();
-    setState(() {
-      useremail = prefdata.getString('email')!;
-    });
-  }
+
 
   @override
   void dispose(){
@@ -119,43 +88,18 @@ class _HomeScreenState extends State<HomeScreen> {
         splitted = sensorData.split(',');
         leftSensor = splitted[0];
         rightSensor = splitted[1];
-        upSensor = splitted[0]; // change to 2 later on
-        downSensor = splitted[1]; // change to 3 later on
-        lidarSensor = splitted[0]; // change to 4 later on
+        upSensor = leftSensor;
+        downSensor = rightSensor;
 
-        newLeft = double.parse(leftSensor);
-        newRight = double.parse(rightSensor);
-        newUp = double.parse(upSensor);
-        newDown = double.parse(downSensor);
-        newLidar = double.parse(lidarSensor);
+        // var newLeft = double.parse(leftSensor);
+        // var newRight = double.parse(rightSensor);
 
-        // test variables
-        distance = (newLeft+newRight)/2;
-        direction = "Upper Left";
-
-        // if (newLeft < newRight){
-        //   tts.speak("Object detected on the left");
-        // } else {
-        //   tts.speak("Object detected on the right");
-        // }
-
-        // determining direction of object
-        // one algo to determine X location (left, mid, right)
-        // one algo to determine Y location (upper, mid, lower)
-        // UL   UM   UR
-        // L    M    R
-        // LL   LM   LR
-
-
-        dataArray.add(sData(now.toString(),distance,direction,leftSensor,rightSensor,upSensor,downSensor,lidarSensor));
+        dataArray.add(sData(now.toString(),leftSensor,rightSensor,upSensor,downSensor));
         _time.add(now.toString());
-        _distance.add(distance);
-        _direction.add(direction);
         _sensor1.add(leftSensor);
         _sensor2.add(rightSensor);
         _sensor3.add(upSensor);
         _sensor4.add(downSensor);
-        _lidar.add(lidarSensor);
 
         setState(() {
           dataArray.toSet();
@@ -164,7 +108,7 @@ class _HomeScreenState extends State<HomeScreen> {
       },
         onDone: () {
           //if WebSocket is disconnected
-          print("Web socket is closed");
+          Fluttertoast.showToast(msg: "Web socket is closed");
           setState(() {
             connected = false;
           });
@@ -172,14 +116,14 @@ class _HomeScreenState extends State<HomeScreen> {
         onError: (error) {
           print(error.toString());
         },);
-
     }catch (_){
-      print("error on connecting to websocket.");
+      Fluttertoast.showToast(msg: "error on connecting to websocket");
     }
   }
 
   Future<void> sendcmd(String cmd) async {
     if(connected == true){
+      Fluttertoast.showToast(msg: "Connected to the Websocket");
       // if(ledstatus == false && cmd != "poweron" && cmd!= "poweroff"){
       //   print("Send the valid command");
       // }else{
@@ -187,23 +131,22 @@ class _HomeScreenState extends State<HomeScreen> {
       // }
     }else{
       channelconnect();
-      print("Websocket is not connected.");
+      Fluttertoast.showToast(msg: "Websocket is not connected.");
     }
   }
 
   // system ui
   Widget buildLogoutBtn() {
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 3),
+      padding: EdgeInsets.symmetric(vertical: 3),
       alignment: Alignment.center,
       width: double.infinity,
       child: RaisedButton(
         elevation: 5,
-        onPressed: () async {
-          prefdata.setBool('login', true);
-          Navigator.push(context, MaterialPageRoute(builder: (context) => const LoginScreen()));
+        onPressed: () {
+          Navigator.push(context, MaterialPageRoute(builder: (context) => LoginScreen()));
         },
-        padding: const EdgeInsets.all(10),
+        padding: EdgeInsets.all(10),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
         ),
@@ -221,15 +164,17 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       backgroundColor: Colors.grey.shade900,
       appBar: AppBar(
-        automaticallyImplyLeading: false,
         title: const Text(
-          "Komori",
-          style: headerStyle,
+          "App Name",
+          style: TextStyle(
+            fontFamily: 'Bebas Neue',
+            fontSize: 25,
+          ),
         ),
         backgroundColor: Colors.green.shade900,
         actions: <Widget>[
           IconButton(
-            icon: const Icon(Icons.arrow_forward),
+            icon: const Icon(Icons.navigate_next),
             tooltip: 'Activity Log',
             onPressed: () {
               Navigator.push(context, MaterialPageRoute<void>(
@@ -239,27 +184,31 @@ class _HomeScreenState extends State<HomeScreen> {
                     appBar: AppBar(
                       title: const Text(
                         'User Activity Log',
-                        style: headerStyle,
+                        style: TextStyle(
+                          fontFamily: 'Bebas Neue',
+                          color: Colors.white,
+                          fontSize: 25,
+                        ),
                       ),
                       backgroundColor: Colors.green.shade900,
                     ),
                     body: Column( //User Activity Log
                       children: [
-                        const SizedBox(height: 10),
+                        SizedBox(height: 10),
                         Text(
-                          '${loggedInUser.username}',
+                          'Blind guy',
                           textAlign: TextAlign.center,
                           style: profileUserStyle,
                         ),
-                        const SizedBox(height: 5),
+                        SizedBox(height: 5),
                         Text(
-                          'UID: ${user?.uid}',
+                          'User #: 0000001',
                           textAlign: TextAlign.center,
                           style: profileIdStyle,
                         ),
-                        const SizedBox(height: 5),
+                        SizedBox(height: 5),
                         buildLogoutBtn(),
-                        const Divider(
+                        Divider(
                           height: 25,
                           color: Colors.white,
                           thickness: 1,
@@ -267,16 +216,16 @@ class _HomeScreenState extends State<HomeScreen> {
                           endIndent: 10,
                         ),
                         Expanded(
-                          child: Padding(
-                            //flex: 1,
-                            child: SfDataGridTheme(
-                              data: SfDataGridThemeData(
-                                headerColor: Colors.cyan,
+                            child: Padding(
+                              //flex: 1,
+                              child: SfDataGridTheme(
+                                data: SfDataGridThemeData(
+                                  headerColor: Colors.cyan,
+                                ),
+                                child: dataGrid(context),
                               ),
-                              child: dataGrid(context),
-                            ),
-                            padding: const EdgeInsets.only(left: 10, right: 10),
-                          )
+                              padding: const EdgeInsets.only(left: 10, right: 10),
+                            )
                           //padding: EdgeInsets.only(left: 10),
                         ),
                       ],
@@ -335,7 +284,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Text(
                     //'The sensors are detecting objects. Please wait...',
                     'Left sensor detected object at ${sensorData} cm.',
-                    style: hoverStyle,
+                    style: TextStyle(
+                      fontFamily: 'Tahoma',
+                    ),
                   ),
                   margin: const EdgeInsets.only(left: 30, right: 30, bottom: 60),
                   decoration: BoxDecoration(
@@ -363,7 +314,6 @@ Future<Null>getRefresh() async{
 List<sData> _sensorData = <sData>[];
 
 // create datagrid widget
-// datagrid widget here is for admin not users
 Widget dataGrid (BuildContext context) {
   return SfDataGrid(
     allowPullToRefresh: true,
@@ -376,37 +326,17 @@ Widget dataGrid (BuildContext context) {
           label: Container(
               padding: EdgeInsets.symmetric(horizontal: 16.0),
               alignment: Alignment.centerRight,
-              child: const Text(
+              child: Text(
                 'Time',
-                style: dataGridHeaderStyle,
-                overflow: TextOverflow.ellipsis,
-              ))),
-      GridColumn(
-          columnName: 'distance',
-          label: Container(
-              padding: EdgeInsets.symmetric(horizontal: 16.0),
-              alignment: Alignment.centerLeft,
-              child: const Text(
-                'Distance',
-                style: dataGridHeaderStyle,
-                overflow: TextOverflow.ellipsis,
-              ))),
-      GridColumn(
-          columnName: 'direction',
-          label: Container(
-              padding: EdgeInsets.symmetric(horizontal: 16.0),
-              alignment: Alignment.centerLeft,
-              child: const Text(
-                'Direction',
                 style: dataGridHeaderStyle,
                 overflow: TextOverflow.ellipsis,
               ))),
       GridColumn(
           columnName: 'sensor1',
           label: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              padding: EdgeInsets.symmetric(horizontal: 16.0),
               alignment: Alignment.centerLeft,
-              child: const Text(
+              child: Text(
                 'Sensor 1',
                 style: dataGridHeaderStyle,
                 overflow: TextOverflow.ellipsis,
@@ -416,7 +346,7 @@ Widget dataGrid (BuildContext context) {
           label: Container(
               padding: EdgeInsets.symmetric(horizontal: 16.0),
               alignment: Alignment.centerLeft,
-              child: const Text(
+              child: Text(
                 'Sensor 2',
                 style: dataGridHeaderStyle,
                 overflow: TextOverflow.ellipsis,
@@ -426,7 +356,7 @@ Widget dataGrid (BuildContext context) {
           label: Container(
               padding: EdgeInsets.symmetric(horizontal: 16.0),
               alignment: Alignment.centerLeft,
-              child: const Text(
+              child: Text(
                 'Sensor 3',
                 style: dataGridHeaderStyle,
                 overflow: TextOverflow.ellipsis,
@@ -436,18 +366,8 @@ Widget dataGrid (BuildContext context) {
           label: Container(
               padding: EdgeInsets.symmetric(horizontal: 16.0),
               alignment: Alignment.centerLeft,
-              child: const Text(
+              child: Text(
                 'Sensor 4',
-                style: dataGridHeaderStyle,
-                overflow: TextOverflow.ellipsis,
-              ))),
-      GridColumn(
-          columnName: 'lidar',
-          label: Container(
-              padding: EdgeInsets.symmetric(horizontal: 16.0),
-              alignment: Alignment.centerLeft,
-              child: const Text(
-                'LiDAR',
                 style: dataGridHeaderStyle,
                 overflow: TextOverflow.ellipsis,
               ))),
@@ -476,7 +396,7 @@ class SensorDataSource extends DataGridSource{
           return Container(
               alignment: (dataGridCell.columnName == 'time')? Alignment.centerRight
                   : Alignment.centerLeft,
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              padding: EdgeInsets.symmetric(horizontal: 16.0),
               child: Text(
                 dataGridCell.value.toString(),
                 overflow: TextOverflow.ellipsis,
@@ -498,7 +418,9 @@ class SensorDataSource extends DataGridSource{
         .map<DataGridRow>((dataGridRow) => DataGridRow(cells: [
       DataGridCell<String>(columnName: 'time', value: dataGridRow.time),
       DataGridCell<String>(columnName: 'sensor1', value: dataGridRow.sensor1),
-      DataGridCell<String>(columnName: 'sensor1', value: dataGridRow.sensor2),
+      DataGridCell<String>(columnName: 'sensor2', value: dataGridRow.sensor2),
+      DataGridCell<String>(columnName: 'sensor3', value: dataGridRow.sensor3),
+      DataGridCell<String>(columnName: 'sensor4', value: dataGridRow.sensor4),
     ]))
         .toList();
   }
@@ -509,42 +431,31 @@ class SensorDataSource extends DataGridSource{
     for (int i = startIndex; i < endIndex; i++) {
       sensorData.add(sData(
         _time[index],
-        _distance[index],
-        _direction[index],
         _sensor1[index],
         _sensor2[index],
         _sensor3[index],
         _sensor4[index],
-        _lidar[index],
       ));
     }
   }
 }
 
 List<String> _time = <String>[];
-List<String> _distance = <String>[];
-List<String> _direction = <String>[];
 List<String> _sensor1 = <String>[];
 List<String> _sensor2 = <String>[];
 List<String> _sensor3 = <String>[];
 List<String> _sensor4 = <String>[];
-List<String> _lidar = <String>[];
 
 class sData {
-  sData(this.time, this.distance, this. direction,this.sensor1, this.sensor2, this.sensor3, this.sensor4, this.lidar);
+  sData(this.time, this.sensor1, this.sensor2, this.sensor3, this.sensor4);
   String time;
-  String distance;
-  String direction;
   String sensor1;
   String sensor2;
   String sensor3;
   String sensor4;
-  String lidar;
 }
 
 List<sData> getSensorData() {
   return dataArray;
 }
-
-
 
