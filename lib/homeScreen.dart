@@ -15,7 +15,7 @@ import 'styles.dart';
 var sensorData = '1';
 List<sData> dataArray = [];
 var index = 0;
-final now = DateTime.now();
+var now;
 var dirX, dirY, direction, distance;
 var leftSensor, rightSensor, upSensor, downSensor, lidarSensor, splitted;
 var newLeft, newRight, newUp, newDown, newLidar;
@@ -30,8 +30,6 @@ class _HomeScreenState extends State<HomeScreen> {
   List<String> items = [];
   bool loading = false, allLoaded = false;
 
-
-
   // connectivity result variables
   bool hasInternet = false;
   ConnectivityResult connResult = ConnectivityResult.none;
@@ -45,11 +43,11 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     _sensorData = getSensorData();
-    //ledstatus = false; //initially ledstatus is off so its FALSE
-    connected = false; //initially connection status is "NO" so its FALSE
+    //ledstatus = false; // initially ledstatus is off so its FALSE
+    connected = false; // initially connection status is "NO" so its FALSE
 
     Future.delayed(Duration.zero,() async {
-      channelconnect(); //connect to WebSocket wth NodeMCU
+      channelconnect(); // connect to WebSocket wth NodeMCU
     });
 
     super.initState();
@@ -65,8 +63,8 @@ class _HomeScreenState extends State<HomeScreen> {
       } else{
         Fluttertoast.showToast(msg: "No Internet Connection");
       }
+      channelconnect();
     });
-
   }
 
 
@@ -78,12 +76,14 @@ class _HomeScreenState extends State<HomeScreen> {
     _scrollController.dispose();
   }
 
-  channelconnect(){ //function to connect
+  channelconnect(){ // function to connect
     try{
       channel = IOWebSocketChannel.connect("ws://192.168.0.1:81"); //channel IP : Port
+      Fluttertoast.showToast(msg: "Connecting to channel...");
       channel.stream.listen((message) {
         print(message);
         sensorData = message;
+
 
         // separating received sensor data
 
@@ -93,11 +93,31 @@ class _HomeScreenState extends State<HomeScreen> {
         upSensor = leftSensor;
         downSensor = rightSensor;
 
-        // var newLeft = double.parse(leftSensor);
-        // var newRight = double.parse(rightSensor);
+        // convert sensor data to double
+        newLeft = double.parse(leftSensor);
+        newRight = double.parse(rightSensor);
+        newUp = double.parse(upSensor);
+        newDown = double.parse(downSensor);
 
-        dataArray.add(sData(now.toString(),leftSensor,rightSensor,upSensor,downSensor));
+        // other data based on time and sensor data
+        now = DateTime.now();
+
+        distance = getDistance(newLeft, newRight);
+        direction = getDirection(newLeft, newRight, newUp, newDown);
+
+        dataArray.add(sData(
+            now.toString(),
+            distance.toString(),
+            direction,
+            leftSensor,
+            rightSensor,
+            upSensor,
+            downSensor)
+        );
+
         _time.add(now.toString());
+        _distance.add(distance.toString());
+        _direction.add(direction);
         _sensor1.add(leftSensor);
         _sensor2.add(rightSensor);
         _sensor3.add(upSensor);
@@ -277,8 +297,8 @@ class _HomeScreenState extends State<HomeScreen> {
               children: [
                 Container(
                   child: Text(
-                    //'The sensors are detecting objects. Please wait...',
-                    'Left sensor detected object at ${sensorData} cm.',
+                    'The sensors are detecting objects. Please wait...',
+                    //'Left sensor detected object at ${sensorData} cm.',
                     style: hoverStyle,
                   ),
                   margin: const EdgeInsets.only(left: 30, right: 30, bottom: 60),
@@ -306,13 +326,14 @@ Future<Null>getRefresh() async{
 
 List<sData> _sensorData = <sData>[];
 
-// create datagrid widget
+// create datagrid widget admin version
 Widget dataGrid (BuildContext context) {
   return SfDataGrid(
     allowPullToRefresh: true,
-    columnWidthMode: (dataArray.isEmpty == false)?ColumnWidthMode.auto:ColumnWidthMode.fill,
+    columnWidthMode: (dataArray.isEmpty == false)?ColumnWidthMode.auto:ColumnWidthMode.none,
     source: _sensorDataSource,
     frozenColumnsCount: 1,
+    isScrollbarAlwaysShown: true,
     columns: <GridColumn>[
       GridColumn(
           columnName: 'time',
@@ -321,6 +342,26 @@ Widget dataGrid (BuildContext context) {
               alignment: Alignment.centerRight,
               child: Text(
                 'Time',
+                style: dataGridHeaderStyle,
+                overflow: TextOverflow.ellipsis,
+              ))),
+      GridColumn(
+          columnName: 'distance',
+          label: Container(
+              padding: EdgeInsets.symmetric(horizontal: 16.0),
+              alignment: Alignment.centerRight,
+              child: Text(
+                'Distance',
+                style: dataGridHeaderStyle,
+                overflow: TextOverflow.ellipsis,
+              ))),
+      GridColumn(
+          columnName: 'direction',
+          label: Container(
+              padding: EdgeInsets.symmetric(horizontal: 16.0),
+              alignment: Alignment.centerRight,
+              child: Text(
+                'Direction',
                 style: dataGridHeaderStyle,
                 overflow: TextOverflow.ellipsis,
               ))),
@@ -410,6 +451,8 @@ class SensorDataSource extends DataGridSource{
     dataGridRows = _sensorData
         .map<DataGridRow>((dataGridRow) => DataGridRow(cells: [
       DataGridCell<String>(columnName: 'time', value: dataGridRow.time),
+      DataGridCell<String>(columnName: 'distance', value: dataGridRow.distance),
+      DataGridCell<String>(columnName: 'direction', value: dataGridRow.direction),
       DataGridCell<String>(columnName: 'sensor1', value: dataGridRow.sensor1),
       DataGridCell<String>(columnName: 'sensor2', value: dataGridRow.sensor2),
       DataGridCell<String>(columnName: 'sensor3', value: dataGridRow.sensor3),
@@ -424,6 +467,8 @@ class SensorDataSource extends DataGridSource{
     for (int i = startIndex; i < endIndex; i++) {
       sensorData.add(sData(
         _time[index],
+        _distance[index],
+        _direction[index],
         _sensor1[index],
         _sensor2[index],
         _sensor3[index],
@@ -434,14 +479,18 @@ class SensorDataSource extends DataGridSource{
 }
 
 List<String> _time = <String>[];
+List<String> _distance = <String>[];
+List<String> _direction = <String>[];
 List<String> _sensor1 = <String>[];
 List<String> _sensor2 = <String>[];
 List<String> _sensor3 = <String>[];
 List<String> _sensor4 = <String>[];
 
 class sData {
-  sData(this.time, this.sensor1, this.sensor2, this.sensor3, this.sensor4);
+  sData(this.time, this.distance, this.direction, this.sensor1, this.sensor2, this.sensor3, this.sensor4);
   String time;
+  String distance;
+  String direction;
   String sensor1;
   String sensor2;
   String sensor3;
@@ -450,4 +499,23 @@ class sData {
 
 List<sData> getSensorData() {
   return dataArray;
+}
+
+double getDistance(double x, double y){
+  return x + y;
+}
+
+String getDirection(double l, double r, double u, double d){
+  var dir = '';
+  if (u>d){
+    dir = 'Lower ';
+  } else {
+    dir = 'Upper ';
+  }
+  if (l>r){
+    dir = dir + 'Right';
+  } else {
+    dir = dir + 'Left';
+  }
+  return dir;
 }
