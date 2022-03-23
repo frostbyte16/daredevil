@@ -339,7 +339,7 @@ Widget dataGrid (BuildContext context) {
           columnName: 'time',
           label: Container(
               padding: EdgeInsets.symmetric(horizontal: 16.0),
-              alignment: Alignment.centerRight,
+              alignment: Alignment.centerLeft,
               child: Text(
                 'Time',
                 style: dataGridHeaderStyle,
@@ -349,7 +349,7 @@ Widget dataGrid (BuildContext context) {
           columnName: 'distance',
           label: Container(
               padding: EdgeInsets.symmetric(horizontal: 16.0),
-              alignment: Alignment.centerRight,
+              alignment: Alignment.centerLeft,
               child: Text(
                 'Distance',
                 style: dataGridHeaderStyle,
@@ -359,7 +359,7 @@ Widget dataGrid (BuildContext context) {
           columnName: 'direction',
           label: Container(
               padding: EdgeInsets.symmetric(horizontal: 16.0),
-              alignment: Alignment.centerRight,
+              alignment: Alignment.centerLeft,
               child: Text(
                 'Direction',
                 style: dataGridHeaderStyle,
