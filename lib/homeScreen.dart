@@ -3,11 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/material/divider.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
-import 'loginScreen.dart';
 import 'package:flutter/widgets.dart';
 import 'package:web_socket_channel/io.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 import 'package:syncfusion_flutter_core/theme.dart';
+import 'loginScreen.dart' as log;
 import 'styles.dart';
 
 
@@ -29,6 +29,8 @@ class _HomeScreenState extends State<HomeScreen> {
   final ScrollController _scrollController = ScrollController();
   List<String> items = [];
   bool loading = false, allLoaded = false;
+
+
 
   // connectivity result variables
   bool hasInternet = false;
@@ -144,7 +146,7 @@ class _HomeScreenState extends State<HomeScreen> {
       child: RaisedButton(
         elevation: 5,
         onPressed: () {
-          Navigator.push(context, MaterialPageRoute(builder: (context) => LoginScreen()));
+          Navigator.push(context, MaterialPageRoute(builder: (context) => log.LoginScreen()));
         },
         padding: EdgeInsets.all(10),
         shape: RoundedRectangleBorder(
@@ -165,11 +167,8 @@ class _HomeScreenState extends State<HomeScreen> {
       backgroundColor: Colors.grey.shade900,
       appBar: AppBar(
         title: const Text(
-          "App Name",
-          style: TextStyle(
-            fontFamily: 'Bebas Neue',
-            fontSize: 25,
-          ),
+          "Komori",
+          style: headerStyle,
         ),
         backgroundColor: Colors.green.shade900,
         actions: <Widget>[
@@ -184,11 +183,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     appBar: AppBar(
                       title: const Text(
                         'User Activity Log',
-                        style: TextStyle(
-                          fontFamily: 'Bebas Neue',
-                          color: Colors.white,
-                          fontSize: 25,
-                        ),
+                        style: headerStyle,
                       ),
                       backgroundColor: Colors.green.shade900,
                     ),
@@ -196,13 +191,13 @@ class _HomeScreenState extends State<HomeScreen> {
                       children: [
                         SizedBox(height: 10),
                         Text(
-                          'Blind guy',
+                          log.username,
                           textAlign: TextAlign.center,
                           style: profileUserStyle,
                         ),
                         SizedBox(height: 5),
                         Text(
-                          'User #: 0000001',
+                          'User ID: ${log.userId}',
                           textAlign: TextAlign.center,
                           style: profileIdStyle,
                         ),
@@ -284,9 +279,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Text(
                     //'The sensors are detecting objects. Please wait...',
                     'Left sensor detected object at ${sensorData} cm.',
-                    style: TextStyle(
-                      fontFamily: 'Tahoma',
-                    ),
+                    style: hoverStyle,
                   ),
                   margin: const EdgeInsets.only(left: 30, right: 30, bottom: 60),
                   decoration: BoxDecoration(
@@ -458,4 +451,3 @@ class sData {
 List<sData> getSensorData() {
   return dataArray;
 }
-
