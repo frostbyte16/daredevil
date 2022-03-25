@@ -15,7 +15,7 @@ import 'styles.dart';
 var sensorData = '1';
 List<sData> dataArray = [];
 var index = 0;
-var now;
+var now, date;
 var dirX, dirY, direction, distance;
 var leftSensor, rightSensor, upSensor, downSensor, lidarSensor, splitted;
 var newLeft, newRight, newUp, newDown, newLidar;
@@ -67,8 +67,6 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-
-
   @override
   void dispose(){
     // TODO: implement dispose
@@ -90,8 +88,8 @@ class _HomeScreenState extends State<HomeScreen> {
         splitted = sensorData.split(',');
         leftSensor = splitted[0];
         rightSensor = splitted[1];
-        upSensor = leftSensor;
-        downSensor = rightSensor;
+        upSensor = splitted[2];
+        downSensor = splitted[3];
 
         // convert sensor data to double
         newLeft = double.parse(leftSensor);
@@ -100,13 +98,14 @@ class _HomeScreenState extends State<HomeScreen> {
         newDown = double.parse(downSensor);
 
         // other data based on time and sensor data
-        now = DateTime.now();
+        date = DateTime.now();
+        now = "${date.hour}:${date.minute}:${date.second}";
 
         distance = getDistance(newLeft, newRight);
         direction = getDirection(newLeft, newRight, newUp, newDown);
 
         dataArray.add(sData(
-            now.toString(),
+            now,
             distance.toString(),
             direction,
             leftSensor,
@@ -115,7 +114,7 @@ class _HomeScreenState extends State<HomeScreen> {
             downSensor)
         );
 
-        _time.add(now.toString());
+        _time.add(now);
         _distance.add(distance.toString());
         _direction.add(direction);
         _sensor1.add(leftSensor);
@@ -129,7 +128,7 @@ class _HomeScreenState extends State<HomeScreen> {
         });
       },
         onDone: () {
-          //if WebSocket is disconnected
+          // if WebSocket is disconnected
           Fluttertoast.showToast(msg: "Web socket is closed");
           setState(() {
             connected = false;
