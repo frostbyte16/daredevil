@@ -29,21 +29,32 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+
+  # connect to esp32
   web_socket_channel: ^2.1.0
-  syncfusion_flutter_datagrid: ^19.4.47
-  fluttertoast: any
+
+  # database connection
   mysql1: ^0.19.2
   shared_preferences: ^2.0.13
 
-
-  # The following adds the Cupertino Icons font to your application.
-  # Use with the CupertinoIcons class for iOS style icons.
-  cupertino_icons: ^1.0.2
-  flutter_tts: ^3.3.3
+  # csv management
+  csv: ^5.0.1
+  path_provider: ^2.0.9
 
   # internet connection checker
   connectivity_plus: ^1.0.4
   internet_connection_checker: ^0.0.1+1
+
+  # other dependencies
+  syncfusion_flutter_datagrid: ^19.4.47
+  fluttertoast: any
+  flutter_tts: ^3.3.3
+
+  # The following adds the Cupertino Icons font to your application.
+  # Use with the CupertinoIcons class for iOS style icons.
+  cupertino_icons: ^1.0.2
+
+
 
 dev_dependencies:
   flutter_test:
@@ -70,6 +81,7 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/phone-vibrate.png
+    - assets/samplelogo.png
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
 

@@ -1,245 +1,286 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'homeScreen.dart';
 import 'loginScreen.dart';
+import 'mysql.dart';
+
+// initialize database
+var db = Mysql();
 
 class SignupScreen extends StatefulWidget {
+  const SignupScreen({Key? key}) : super(key: key);
+
   @override
   _SignupScreenState createState() => _SignupScreenState();
 }
 
 class _SignupScreenState extends State<SignupScreen> {
 
-  Widget buildUsername() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        Text(
-          'Username',
-          style: TextStyle(
-              fontFamily: 'Tahoma',
-              color: Colors.white,
-              fontSize: 17
-          ),
-        ),
-        SizedBox(
-          height: 10,
-        ),
-        Container(
-          alignment: Alignment.centerLeft,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(10),
-          ),
-          height: 60,
-          child: TextField(
-            keyboardType: TextInputType.name,
-            style: TextStyle(
-                color: Colors.black,
-                fontFamily: 'Tahoma'
-            ),
-            decoration: InputDecoration(
-                border: InputBorder.none,
-                contentPadding: EdgeInsets.only(top: 14),
-                prefixIcon: Icon(
-                  Icons.text_fields,
-                  color: Colors.green.shade900,
-                ),
-                hintText: 'Enter your username...'
-            ),
-          ),
-        ),
-      ],
-    );
-  }
 
-  Widget buildPassword() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        Text(
-          'Password',
-          style: TextStyle(
-              fontFamily: 'Tahoma',
-              color: Colors.white,
-              fontSize: 17
-          ),
-        ),
-        SizedBox(
-          height: 10,
-        ),
-        Container(
-          alignment: Alignment.centerLeft,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(10),
-          ),
-          height: 60,
-          child: TextField(
-            obscureText: true,
-            style: TextStyle(
-                color: Colors.black,
-                fontFamily: 'Tahoma'
-            ),
-            decoration: InputDecoration(
-                border: InputBorder.none,
-                contentPadding: EdgeInsets.only(top: 14),
-                prefixIcon: Icon(
-                  Icons.lock,
-                  color: Colors.green.shade900,
-                ),
-                hintText: 'Enter your password...'
-            ),
-          ),
-        ),
-      ],
-    );
-  }
+  // string for displaying the error Message
+  String? errorMessage;
 
-  Widget buildConfirmPassword() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        Text(
-          'Confirm Password',
-          style: TextStyle(
-              fontFamily: 'Tahoma',
-              color: Colors.white,
-              fontSize: 17
-          ),
-        ),
-        SizedBox(
-          height: 10,
-        ),
-        Container(
-          alignment: Alignment.centerLeft,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(10),
-          ),
-          height: 60,
-          child: TextField(
-            obscureText: true,
-            style: TextStyle(
-                color: Colors.black,
-                fontFamily: 'Tahoma'
-            ),
-            decoration: InputDecoration(
-                border: InputBorder.none,
-                contentPadding: EdgeInsets.only(top: 14),
-                prefixIcon: Icon(
-                  Icons.lock,
-                  color: Colors.green.shade900,
-                ),
-                hintText: 'Re-enter your password...'
-            ),
-          ),
-        ),
-      ],
-    );
-  }
+  final _formKey = GlobalKey<FormState>();
 
-  Widget buildSubmitBtn() {
-    return Container(
-      padding: EdgeInsets.symmetric(vertical: 15),
-      width: double.infinity,
-      child: RaisedButton(
-        elevation: 5,
-        onPressed: () {
-          Navigator.push(context, MaterialPageRoute(builder: (context) => HomeScreen()));
-        },
-        padding: EdgeInsets.all(15),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(15),
-        ),
-        color: Colors.green.shade900,
-        child: Text(
-          'SUBMIT',
-          style: TextStyle(
-              color: Colors.white,
-              fontFamily: 'Tahoma'
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget buildSigninBtn() {
-    return GestureDetector(
-      onTap: () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => LoginScreen()));
-      },
-      child: RichText(
-        text: TextSpan(
-          children: [
-            TextSpan(
-              text: 'Already have an account? ',
-              style: TextStyle(
-                  color: Colors.white,
-                  fontFamily: 'Tahoma'
-              ),
-            ),
-            TextSpan(
-              text: 'Sign In',
-              style: TextStyle(
-                color: Colors.blue.shade700,
-                fontFamily: 'Tahoma',
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+  final usernameEditingController = new TextEditingController();
+  final passwordEditingController = new TextEditingController();
+  final cpasswordEditingController = new TextEditingController();
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: AnnotatedRegion<SystemUiOverlayStyle>(
-        value: SystemUiOverlayStyle.dark,
-        child: GestureDetector(
-          child: Stack(
-            children: <Widget>[
-              Container(
-                padding: EdgeInsets.only(left: 30, right: 30),
-                height: double.infinity,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade900,
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Text(
-                      'SIGN UP',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontFamily: 'Bebas Neue',
-                        letterSpacing: 5,
-                        fontSize: 40,
-                      ),
-                    ),
-                    SizedBox(height: 10),
-                    Divider(
-                      color: Colors.white,
-                      thickness: 1,
-                    ),
-                    SizedBox(height: 10),
-                    buildUsername(),
-                    SizedBox(height: 10),
-                    buildPassword(),
-                    SizedBox(height: 10),
-                    buildConfirmPassword(),
-                    buildSubmitBtn(),
-                    buildSigninBtn(),
-                  ],
-                ),
-              ),
-            ],
+
+    // username field
+    final buildUsername = TextFormField(
+      autofocus: false,
+      controller: usernameEditingController,
+      keyboardType: TextInputType.name,
+      validator: (value) {
+        RegExp regex = new RegExp(r'^.{5,}$');
+        if (value!.isEmpty) {
+          return ("Username cannot be empty.");
+        }
+        if (!regex.hasMatch(value)) {
+          return ("Enter valid username. Minimum of 5 characters.");
+        }
+        return null;
+      },
+      onSaved: (value) {
+        usernameEditingController.text = value!;
+      },
+      textInputAction: TextInputAction.next,
+      decoration: InputDecoration(
+        fillColor: Colors.white,
+        filled: true,
+        prefixIcon: Icon(
+            Icons.account_circle,
+            color: Colors.green.shade900),
+        contentPadding: const EdgeInsets.fromLTRB(20, 15, 20, 15),
+        hintText: "Username",
+        border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10)
+        ),
+      ),
+    );
+
+    // email field
+    // final buildEmail = TextFormField(
+    //   autofocus: false,
+    //   controller: emailEditingController,
+    //   keyboardType: TextInputType.emailAddress,
+    //   validator: (value) {
+    //     if (value!.isEmpty) {
+    //       return ("Please enter your email.");
+    //     }
+    //     // reg expression for email validation
+    //     if (!RegExp("^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+.[a-z]")
+    //         .hasMatch(value)) {
+    //       return ("Please enter a valid email.");
+    //     }
+    //     return null;
+    //   },
+    //   onSaved: (value) {
+    //     emailEditingController.text = value!;
+    //   },
+    //   textInputAction: TextInputAction.next,
+    //   decoration: InputDecoration(
+    //     fillColor: Colors.white,
+    //     filled: true,
+    //     border: OutlineInputBorder(
+    //         borderRadius: BorderRadius.circular(10)
+    //     ),
+    //     contentPadding: const EdgeInsets.fromLTRB(20, 15, 20, 15),
+    //     prefixIcon: Icon(
+    //       Icons.email,
+    //       color: Colors.green.shade900,
+    //     ),
+    //     hintText: 'Email',
+    //   ),
+    //   style: const TextStyle(
+    //       fontFamily: 'Tahoma'
+    //   ),
+    // );
+
+    // password field
+    final buildPassword = TextFormField(
+      autofocus: false,
+      controller: passwordEditingController,
+      obscureText: true,
+      validator: (value) {
+        RegExp regex = new RegExp(r'^.{6,}$');
+        if (value!.isEmpty) {
+          return ("Please enter your password.");
+        }
+        if (!regex.hasMatch(value)) {
+          return ("Enter a valid password. Minimum of 6 characters.");
+        }
+      },
+      onSaved: (value) {
+        passwordEditingController.text = value!;
+      },
+      textInputAction: TextInputAction.next,
+      decoration: InputDecoration(
+        fillColor: Colors.white,
+        filled: true,
+        prefixIcon: Icon(Icons.vpn_key, color: Colors.green.shade900),
+        contentPadding: const EdgeInsets.fromLTRB(20, 15, 20, 15),
+        hintText: "Password",
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+      ),
+      style: const TextStyle(
+          fontFamily: 'Tahoma'
+      ),
+    );
+
+    // confirm password field
+    final buildCPassword = TextFormField(
+      autofocus: false,
+      controller: cpasswordEditingController,
+      obscureText: true,
+      validator: (value) {
+        if (cpasswordEditingController.text != passwordEditingController.text) {
+          return "Password doesn't match.";
+        }
+        return null;
+      },
+      onSaved: (value) {
+        cpasswordEditingController.text = value!;
+      },
+      textInputAction: TextInputAction.done,
+      decoration: InputDecoration(
+        fillColor: Colors.white,
+        filled: true,
+        prefixIcon: Icon(Icons.vpn_key, color: Colors.green.shade900),
+        contentPadding: const EdgeInsets.fromLTRB(20, 15, 20, 15),
+        hintText: "Confirm Password",
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+      ),
+    );
+
+    //signup button
+    final signUpButton = Material(
+      elevation: 5,
+      borderRadius: BorderRadius.circular(30),
+      color: Colors.green.shade900,
+      child: MaterialButton(
+        padding: const EdgeInsets.fromLTRB(20, 15, 20, 15),
+        minWidth: MediaQuery.of(context).size.width,
+        onPressed: () {
+          signUp(usernameEditingController.text, passwordEditingController.text);
+        },
+        child: const Text(
+          "Sign Up",
+          textAlign: TextAlign.center,
+          style: TextStyle(
+              fontSize: 20,
+              fontFamily: 'Bebas Neue',
+              color: Colors.white,
+              letterSpacing: 3,
+              fontWeight: FontWeight.bold
           ),
         ),
       ),
     );
+
+    return Scaffold(
+      backgroundColor: Colors.grey.shade900,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.green.shade900),
+          onPressed: () {
+            // passing this to our root
+            Navigator.of(context).pop();
+          },
+        ),
+      ),
+      body: Center(
+        child: SingleChildScrollView(
+          child: Container(
+            color: Colors.grey.shade900,
+            child: Padding(
+              padding: const EdgeInsets.all(36.0),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    SizedBox(
+                        height: 100,
+                        child: Image.asset(
+                          "assets/samplelogo.png",
+                          fit: BoxFit.contain,
+                        )),
+                    const SizedBox(height: 45),
+                    buildUsername,
+                    const SizedBox(height: 20),
+                    buildPassword,
+                    const SizedBox(height: 20),
+                    buildCPassword,
+                    const SizedBox(height: 20),
+                    signUpButton,
+                    const SizedBox(height: 15),
+                    Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          const Text("Already have an account? ",
+                            style: TextStyle(
+                                fontFamily: 'Tahoma',
+                                color: Colors.white
+                            ),),
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => LoginScreen()));
+                            },
+                            child: Text(
+                              "Sign In",
+                              style: TextStyle(
+                                  color: Colors.blue.shade700,
+                                  fontWeight: FontWeight.bold,
+                                  fontFamily: 'Tahoma'
+                              ),
+                            ),
+                          )
+                        ])
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+  void signUp(String email, String password) async {
+    bool exist = true;
+    db.getConnection().then((conn) {
+      String sql = 'SELECT username FROM Guidance_system.users WHERE username="$email";';
+      conn.query(sql).then((results) {
+        var users = results.toList();
+        if (users.isNotEmpty) {
+          exist = true;
+          Fluttertoast.showToast(msg: "Username already taken.");
+        } else {
+          exist = false;
+        }
+      });
+      if (exist == false){
+      // String sql = 'INSERT INTO Guidance_system.users (username, password, user_level) VALUES ("test", "test", "user");';
+        String sql = 'INSERT INTO Guidance_system.users (username, password, user_level) VALUES ("$email", "$password", "user")';
+        conn.query(sql);
+        Fluttertoast.showToast(msg: "Account created successfully");
+      }
+      conn.close();
+    });
   }
 }

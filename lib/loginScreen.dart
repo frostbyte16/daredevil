@@ -22,9 +22,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
   // form key
   final _formKey = GlobalKey<FormState>();
+
   // initialize database
   var db = new Mysql();
-  var mail = '';
 
   // editing controller
   final TextEditingController emailController = new TextEditingController();
@@ -68,7 +68,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-
     // email field
     final buildEmail = TextFormField(
       autofocus: false,
@@ -143,11 +142,12 @@ class _LoginScreenState extends State<LoginScreen> {
       color: Colors.green.shade900,
       child: MaterialButton(
         padding: const EdgeInsets.fromLTRB(20, 15, 20, 15),
-        minWidth: MediaQuery.of(context).size.width,
+        minWidth: MediaQuery
+            .of(context)
+            .size
+            .width,
         onPressed: () {
-          getSql();
-          //print('mail: $mail');
-
+          // getSql();
           String useremail = emailController.text;
           String userpassword = passwordController.text;
 
@@ -208,7 +208,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) =>
-                                      SignupScreen()));
+                                          SignupScreen()));
                             },
                             child: Text(
                               "Create one",
@@ -228,21 +228,22 @@ class _LoginScreenState extends State<LoginScreen> {
 
   // login function
   void signIn(String email, String password) async {
-    db.getConnection().then((conn){
+    db.getConnection().then((conn) {
       String sql = 'SELECT * FROM Guidance_system.users WHERE username="$email";';
-      conn.query(sql).then((results){
+      conn.query(sql).then((results) {
         var users = results.toList();
         // 0 - id ; 1 - username ; 2 - password ; 3 - userlevel
-        if (users.isNotEmpty){
+        if (users.isNotEmpty) {
           //userId = users[0];
-          if(email==users[0][1] && password==users[0][2]){
+          if (email == users[0][1] && password == users[0][2]) {
             userId = users[0][0];
             username = users[0][1];
             userLevel = users[0][3];
             print('Login Success');
             Fluttertoast.showToast(msg: "Login successful.");
-            Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => HomeScreen()));
-          } else{
+            Navigator.of(context).pushReplacement(
+                MaterialPageRoute(builder: (context) => HomeScreen()));
+          } else {
             print('Incorrect username/password');
             Fluttertoast.showToast(msg: "Incorrect username/password.");
           }
@@ -251,36 +252,41 @@ class _LoginScreenState extends State<LoginScreen> {
           Fluttertoast.showToast(msg: "User does not exist.");
         }
       });
+      conn.close();
     });
   }
 
-  void getSql() async {
-    // db.getConnection().then((conn){
-    //   String sql = 'SELECT * FROM Guidance_system.users WHERE username="jkashdka";';
-    //   conn.query(sql).then((results){
-    //
-    //     var users = results.toList(); // [Fields: {id: 100000, username: admin, password: admin, user_level: admin}, Fields: {id: 100001, username: user, password: user, user_level: user}]
-    //     // var x = users[0][0]; // id
-    //     // var y = users[0][1]; // username
-    //
-    //
-    //     if (users.isNotEmpty){
-    //       print(users);
-    //     } else {
-    //       print('No data available');
-    //     }
+  // void getSql() async {
+  //   db.getConnection().then((conn){
+  //     String sql = 'SELECT * FROM Guidance_system.users;';
+  //     conn.query(sql).then((results){
+  //
+  //       var users = results.toList(); // [Fields: {id: 100000, username: admin, password: admin, user_level: admin}, Fields: {id: 100001, username: user, password: user, user_level: user}]
+  //       var x = users[0][0]; // id
+  //       var y = users[0][1]; // username
+  //
+  //
+  //       if (users.isNotEmpty){
+  //         print(users);
+  //       } else {
+  //         print('No data available');
+  //       }
+  //
+  //   // print('id= $x');
+  //   // print('username= $y');
+  //   // print('row: $results[0]');
+  //   for(var row in results){
+  //     var id = row[0];
+  //     var username = row[1];
+  //     print('$id = $username');
+  //     setState(() {
+  //       //mail = row[1];
+  //       //print('mail: $mail');
+  //     });
+  //   }
+  //     });
+  //   });
+  //
+  // }
 
-        // print('id= $x');
-        // print('username= $y');
-        //print('row: $results[0]');
-        // for(var row in results){
-        //   setState(() {
-        //     mail = row[1];
-        //     //print('mail: $mail');
-        //   });
-        // }
-    //   });
-    // });
-
-  }
 }

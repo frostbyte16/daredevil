@@ -1,12 +1,18 @@
+import 'dart:convert';
+import 'dart:io';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/material/divider.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:flutter/widgets.dart';
+import 'package:csv/csv.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:web_socket_channel/io.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 import 'package:syncfusion_flutter_core/theme.dart';
+import 'mysql.dart';
+import 'processes.dart';
 import 'loginScreen.dart' as log;
 import 'styles.dart';
 
@@ -19,6 +25,10 @@ var now, date;
 var dirX, dirY, direction, distance;
 var leftSensor, rightSensor, upSensor, downSensor, lidarSensor, splitted;
 var newLeft, newRight, newUp, newDown, newLidar;
+var truePath;
+
+// initialize database
+// var db = Mysql();
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -41,6 +51,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void initState() {
+    initalizeCsv();
     super.initState();
     _sensorData = getSensorData();
     //ledstatus = false; // initially ledstatus is off so its FALSE
@@ -60,6 +71,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
       if(this.hasInternet==true){
         Fluttertoast.showToast(msg: "Connected to the Internet");
+        // transferData(truePath);
       } else{
         Fluttertoast.showToast(msg: "No Internet Connection");
       }
@@ -82,7 +94,6 @@ class _HomeScreenState extends State<HomeScreen> {
         print(message);
         sensorData = message;
 
-
         // separating received sensor data
 
         splitted = sensorData.split(',');
@@ -103,6 +114,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
         distance = getDistance(newLeft, newRight);
         direction = getDirection(newLeft, newRight, newUp, newDown);
+
+        // Push sensor data to csv file for offline processes
+        //["UserID", "Time", "Distance", "Direction", "Sensor1", "Sensor2", "Sensor3", "Sensor4", "LiDAR"]
+        data.add([log.userId,now,distance,direction, newLeft, newRight, newUp, newDown, newLidar]);
+        generateCsv();
 
         dataArray.add(sData(
             now,
@@ -180,6 +196,29 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  Widget buildUpload() {
+    return Container(
+      padding: EdgeInsets.symmetric(vertical: 3),
+      alignment: Alignment.center,
+      width: double.infinity,
+      child: RaisedButton(
+        elevation: 5,
+        onPressed: () {
+          transferData(truePath);
+        },
+        padding: EdgeInsets.all(10),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        color: Colors.green.shade900,
+        child: const Text(
+          'Upload',
+          style: btnStyle,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -221,7 +260,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           style: profileIdStyle,
                         ),
                         SizedBox(height: 5),
-                        buildLogoutBtn(),
+                        buildUpload(),
                         Divider(
                           height: 25,
                           color: Colors.white,
@@ -296,7 +335,9 @@ class _HomeScreenState extends State<HomeScreen> {
               children: [
                 Container(
                   child: Text(
-                    'The sensors are detecting objects. Please wait...',
+                    poggers.toString(),
+                    //newData.toString(),
+                    //'The sensors are detecting objects. Please wait...',
                     //'Left sensor detected object at ${sensorData} cm.',
                     style: hoverStyle,
                   ),
@@ -517,4 +558,32 @@ String getDirection(double l, double r, double u, double d){
     dir = dir + 'Left';
   }
   return dir;
+}
+
+// functions for csv data
+
+
+List<List<dynamic>> data = [
+  //["UserID", "Time", "Distance", "Direction", "Sensor1", "Sensor2", "Sensor3", "Sensor4", "LiDAR"]
+];
+
+generateCsv() async {
+  String csvData = ListToCsvConverter().convert(data);
+  final String directory = (await getApplicationSupportDirectory()).path;
+  final path = "$directory/data.csv";
+  truePath = path;
+  final File file = File(path);
+  await file.writeAsString(csvData);
+  Fluttertoast.showToast(msg: "CSV created");
+}
+
+initalizeCsv() async {
+  List<List<dynamic>> temp = [];
+  String csvData = ListToCsvConverter().convert(temp);
+  final String directory = (await getApplicationSupportDirectory()).path;
+  final path = "$directory/data.csv";
+  truePath = path;
+  final File file = File(path);
+  await file.writeAsString(csvData);
+  Fluttertoast.showToast(msg: "CSV created");
 }
