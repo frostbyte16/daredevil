@@ -45,7 +45,7 @@ class _HomeScreenState extends State<HomeScreen> {
   // get sensor data
   // late bool ledstatus; //boolean value to track LED status, if its ON or OFF
   late IOWebSocketChannel channel;
-  late bool connected; //boolean value to track if WebSocket is connected
+  late bool webSocketConnected; //boolean value to track if WebSocket is connected
 
   @override
   void initState() {
@@ -53,7 +53,7 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     _sensorData = getSensorData();
     //ledstatus = false; // initially ledstatus is off so its FALSE
-    connected = false; // initially connection status is "NO" so its FALSE
+    webSocketConnected = false; // initially connection status is "NO" so its FALSE
 
     Future.delayed(Duration.zero,() async {
       channelconnect(); // connect to WebSocket wth NodeMCU
@@ -69,7 +69,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
       if(this.hasInternet==true){
         Fluttertoast.showToast(msg: "Connected to the Internet");
-        // transferData(truePath);
+        if(webSocketConnected==false){
+          Fluttertoast.showToast(msg: "Preparing to send data to the database");
+          transferData(truePath);
+        }
       } else{
         Fluttertoast.showToast(msg: "No Internet Connection");
       }
@@ -151,7 +154,7 @@ class _HomeScreenState extends State<HomeScreen> {
           // if WebSocket is disconnected
           Fluttertoast.showToast(msg: "Web socket is closed");
           setState(() {
-            connected = false;
+            webSocketConnected = false;
           });
         },
         onError: (error) {
@@ -163,7 +166,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> sendcmd(String cmd) async {
-    if(connected == true){
+    if(webSocketConnected == true){
       Fluttertoast.showToast(msg: "Connected to the Websocket");
       // if(ledstatus == false && cmd != "poweron" && cmd!= "poweroff"){
       //   print("Send the valid command");
@@ -265,6 +268,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                         SizedBox(height: 5),
                         buildUpload(),
+                        SizedBox(height: 5),
+                        buildLogoutBtn(),
                         Divider(
                           height: 25,
                           color: Colors.white,
@@ -545,28 +550,7 @@ List<sData> getSensorData() {
   return dataArray;
 }
 
-double getDistance(double x, double y){
-  return x + y;
-}
-
-String getDirection(double l, double r, double u, double d){
-  var dir = '';
-  if (u>d){
-    dir = 'Lower ';
-  } else {
-    dir = 'Upper ';
-  }
-  if (l>r){
-    dir = dir + 'Right';
-  } else {
-    dir = dir + 'Left';
-  }
-  return dir;
-}
-
 // functions for csv data
-
-
 List<List<dynamic>> data = [
   //["UserID", "Time", "Distance", "Direction", "Sensor1", "Sensor2", "Sensor3", "Sensor4", "LiDAR"]
 ];
