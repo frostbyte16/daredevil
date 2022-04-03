@@ -7,7 +7,7 @@ import 'loginScreen.dart';
 import 'mysql.dart';
 
 // initialize database
-var db = Mysql();
+var db = new Mysql();
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({Key? key}) : super(key: key);
@@ -36,16 +36,16 @@ class _SignupScreenState extends State<SignupScreen> {
       autofocus: false,
       controller: usernameEditingController,
       keyboardType: TextInputType.name,
-      validator: (value) {
-        RegExp regex = new RegExp(r'^.{5,}$');
-        if (value!.isEmpty) {
-          return ("Username cannot be empty.");
-        }
-        if (!regex.hasMatch(value)) {
-          return ("Enter valid username. Minimum of 5 characters.");
-        }
-        return null;
-      },
+      // validator: (value) {
+      //   RegExp regex = new RegExp(r'^.{5,}$');
+      //   if (value!.isEmpty) {
+      //     return ("Username cannot be empty.");
+      //   }
+      //   if (!regex.hasMatch(value)) {
+      //     return ("Enter valid username. Minimum of 5 characters.");
+      //   }
+      //   return null;
+      // },
       onSaved: (value) {
         usernameEditingController.text = value!;
       },
@@ -107,15 +107,15 @@ class _SignupScreenState extends State<SignupScreen> {
       autofocus: false,
       controller: passwordEditingController,
       obscureText: true,
-      validator: (value) {
-        RegExp regex = new RegExp(r'^.{6,}$');
-        if (value!.isEmpty) {
-          return ("Please enter your password.");
-        }
-        if (!regex.hasMatch(value)) {
-          return ("Enter a valid password. Minimum of 6 characters.");
-        }
-      },
+      // validator: (value) {
+      //   RegExp regex = new RegExp(r'^.{6,}$');
+      //   if (value!.isEmpty) {
+      //     return ("Please enter your password.");
+      //   }
+      //   if (!regex.hasMatch(value)) {
+      //     return ("Enter a valid password. Minimum of 6 characters.");
+      //   }
+      // },
       onSaved: (value) {
         passwordEditingController.text = value!;
       },
@@ -140,12 +140,12 @@ class _SignupScreenState extends State<SignupScreen> {
       autofocus: false,
       controller: cpasswordEditingController,
       obscureText: true,
-      validator: (value) {
-        if (cpasswordEditingController.text != passwordEditingController.text) {
-          return "Password doesn't match.";
-        }
-        return null;
-      },
+      // validator: (value) {
+      //   if (cpasswordEditingController.text != passwordEditingController.text) {
+      //     return "Password doesn't match.";
+      //   }
+      //   return null;
+      // },
       onSaved: (value) {
         cpasswordEditingController.text = value!;
       },
@@ -160,6 +160,9 @@ class _SignupScreenState extends State<SignupScreen> {
           borderRadius: BorderRadius.circular(10),
         ),
       ),
+      style: const TextStyle(
+          fontFamily: 'Tahoma'
+      ),
     );
 
     //signup button
@@ -171,7 +174,11 @@ class _SignupScreenState extends State<SignupScreen> {
         padding: const EdgeInsets.fromLTRB(20, 15, 20, 15),
         minWidth: MediaQuery.of(context).size.width,
         onPressed: () {
-          signUp(usernameEditingController.text, passwordEditingController.text);
+          if (passwordEditingController.text == cpasswordEditingController.text){
+            signUp(usernameEditingController.text, passwordEditingController.text);
+          } else {
+            Fluttertoast.showToast(msg: "Passwords do not match");
+          }
         },
         child: const Text(
           "Sign Up",
@@ -261,25 +268,26 @@ class _SignupScreenState extends State<SignupScreen> {
       ),
     );
   }
-  void signUp(String email, String password) async {
-    bool exist = true;
+  void signUp(String username, String password) async {
     db.getConnection().then((conn) {
-      String sql = 'SELECT username FROM Guidance_system.users WHERE username="$email";';
+      String sql = 'SELECT username FROM Guidance_system.users WHERE username="$username";';
       conn.query(sql).then((results) {
         var users = results.toList();
-        if (users.isNotEmpty) {
-          exist = true;
-          Fluttertoast.showToast(msg: "Username already taken.");
+        if (users.isEmpty) {
+          insertToDatabase(username, password);
         } else {
-          exist = false;
+          Fluttertoast.showToast(msg: "Username already taken.");
         }
       });
-      if (exist == false){
-      // String sql = 'INSERT INTO Guidance_system.users (username, password, user_level) VALUES ("test", "test", "user");';
-        String sql = 'INSERT INTO Guidance_system.users (username, password, user_level) VALUES ("$email", "$password", "user")';
-        conn.query(sql);
-        Fluttertoast.showToast(msg: "Account created successfully");
-      }
+      conn.close();
+    });
+  }
+
+  void insertToDatabase(String username, String password){
+    db.getConnection().then((conn) {
+      String sql = 'INSERT INTO Guidance_system.users (username, password, user_level) VALUES ("$username", "$password", "user")';
+      conn.query(sql);
+      Fluttertoast.showToast(msg: "Account created successfully");
       conn.close();
     });
   }

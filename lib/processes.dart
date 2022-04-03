@@ -38,8 +38,8 @@ transferData(String path) async {
       var lidar = row[8];
       String sql = 'INSERT INTO Guidance_system.sensors (user_id, time, distance, direction, leftUltrasonic, rightUltrasonic, upUltrasonic, downUltrasonic, lidar) VALUES ($userId, $time, $distance, "$direction", $leftU, $rightU, $upU, $downU, $lidar);';
       conn.query(sql);
+      Fluttertoast.showToast(msg: "$sql");
     }
-    Fluttertoast.showToast(msg: sql);
     // Fluttertoast.showToast(msg: "Transferred data to the database poggers!");
   });
 }
