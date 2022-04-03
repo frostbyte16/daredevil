@@ -290,5 +290,9 @@ class _SignupScreenState extends State<SignupScreen> {
       Fluttertoast.showToast(msg: "Account created successfully");
       conn.close();
     });
+    Navigator.pushAndRemoveUntil(
+        (context),
+        MaterialPageRoute(builder: (context) => HomeScreen()),
+            (route) => false);
   }
 }

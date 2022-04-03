@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
@@ -11,7 +10,6 @@ import 'package:path_provider/path_provider.dart';
 import 'package:web_socket_channel/io.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 import 'package:syncfusion_flutter_core/theme.dart';
-import 'mysql.dart';
 import 'processes.dart';
 import 'loginScreen.dart' as log;
 import 'styles.dart';
@@ -38,7 +36,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final ScrollController _scrollController = ScrollController();
   List<String> items = [];
-  bool loading = false, allLoaded = false;
+  // bool connWebsocket = false;
 
   // connectivity result variables
   bool hasInternet = false;
@@ -75,7 +73,14 @@ class _HomeScreenState extends State<HomeScreen> {
       } else{
         Fluttertoast.showToast(msg: "No Internet Connection");
       }
+      // calls websocket if connectivity changes
       channelconnect();
+
+      // uploads data to database when disconnected to the websocket and connected to the internet
+      // if(connected==false && this.hasInternet==true){
+      //   transferData(truePath);
+      // }
+
     });
   }
 
@@ -95,7 +100,6 @@ class _HomeScreenState extends State<HomeScreen> {
         sensorData = message;
 
         // separating received sensor data
-
         splitted = sensorData.split(',');
         leftSensor = splitted[0];
         rightSensor = splitted[1];
@@ -117,7 +121,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
         // Push sensor data to csv file for offline processes
         //["UserID", "Time", "Distance", "Direction", "Sensor1", "Sensor2", "Sensor3", "Sensor4", "LiDAR"]
-        data.add([log.userId,now,distance,direction, newLeft, newRight, newUp, newDown, newLidar]);
+        data.add([log.userId,date,distance,direction, newLeft, newRight, newUp, newDown, newLidar]);
         generateCsv();
 
         dataArray.add(sData(
