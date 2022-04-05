@@ -3,7 +3,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'mysql.dart';
 import 'signupScreen.dart';
 import 'homeScreen.dart';
@@ -19,6 +18,8 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  // double press back button to exit app
+  DateTime backButtonTimePressed = DateTime.now();
 
   // form key
   final _formKey = GlobalKey<FormState>();
@@ -27,7 +28,7 @@ class _LoginScreenState extends State<LoginScreen> {
   var db = new Mysql();
 
   // editing controller
-  final TextEditingController emailController = new TextEditingController();
+  final TextEditingController usernameController = new TextEditingController();
   final TextEditingController passwordController = new TextEditingController();
 
   // firebase
@@ -38,13 +39,14 @@ class _LoginScreenState extends State<LoginScreen> {
 
   // keep user logged in
   // late SharedPreferences prefdata;
-  late bool newuser;
+  // late bool newuser;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    //userLoginCheck();
+
+    // userLoginCheck();
   }
 
   // keep user logged in
@@ -52,7 +54,7 @@ class _LoginScreenState extends State<LoginScreen> {
     // prefdata = await SharedPreferences.getInstance();
     // newuser = (prefdata.getBool('login') ?? true);
     // print(newuser);
-    //
+    // //
     // if (newuser == false) {
     //   Navigator.pushReplacement(context, new MaterialPageRoute(builder: (context) => HomeScreen()));
     // }
@@ -61,31 +63,31 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   void dispose() {
     // clean up the controller when the widget is disposed
-    emailController.dispose();
+    usernameController.dispose();
     passwordController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    // email field
-    final buildEmail = TextFormField(
+    // username field
+    final buildUsername = TextFormField(
       autofocus: false,
-      controller: emailController,
-      keyboardType: TextInputType.emailAddress,
+      controller: usernameController,
+      keyboardType: TextInputType.name,
       validator: (value) {
-        if (value!.isEmpty) {
-          return ("Please enter your email.");
-        }
-        // reg expression for email validation
-        if (!RegExp("^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+.[a-z]")
-            .hasMatch(value)) {
-          return ("Please enter a valid email.");
-        }
-        return null;
+        // if (value!.isEmpty) {
+        //   return ("Please enter your username.");
+        // }
+        // // reg expression for username validation
+        // if (!RegExp("^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+.[a-z]")
+        //     .hasMatch(value)) {
+        //   return ("Username already taken.");
+        // }
+        // return null;
       },
       onSaved: (value) {
-        emailController.text = value!;
+        usernameController.text = value!;
       },
       textInputAction: TextInputAction.next,
       decoration: InputDecoration(
@@ -96,10 +98,10 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
         contentPadding: const EdgeInsets.fromLTRB(20, 15, 20, 15),
         prefixIcon: Icon(
-          Icons.email,
+          Icons.account_circle,
           color: Colors.green.shade900,
         ),
-        hintText: 'Email',
+        hintText: 'Username',
       ),
       style: hoverStyle,
     );
@@ -148,14 +150,14 @@ class _LoginScreenState extends State<LoginScreen> {
             .width,
         onPressed: () {
           // getSql();
-          String useremail = emailController.text;
+          String usrname = usernameController.text;
           String userpassword = passwordController.text;
 
-          if (useremail != '' && userpassword != '') {
+          if (usrname != '' && userpassword != '') {
             // print('Successful.');
             // prefdata.setBool('login', false);
-            // prefdata.setString('email', useremail);
-            signIn(emailController.text, passwordController.text);
+            // prefdata.setString('username', usrname);
+            signIn(usernameController.text, passwordController.text);
           } else {
             Fluttertoast.showToast(msg: "Enter missing login credentials.");
           }
@@ -169,54 +171,69 @@ class _LoginScreenState extends State<LoginScreen> {
     );
 
     // ui
-    return Scaffold(
-      backgroundColor: Colors.grey.shade900,
-      body: Center(
-        child: SingleChildScrollView(
-          child: Container(
-            color: Colors.grey.shade900,
-            child: Padding(
-              padding: const EdgeInsets.all(36.0),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: <Widget>[
-                    SizedBox(
-                        height: 100,
-                        child: Image.asset(
-                          'assets/samplelogo.png',
-                          fit: BoxFit.contain,
-                        )),
-                    const SizedBox(height: 45),
-                    buildEmail,
-                    const SizedBox(height: 25),
-                    buildPassword,
-                    const SizedBox(height: 35),
-                    loginButton,
-                    const SizedBox(height: 15),
-                    Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          const Text("Don't have an account? ",
-                            style: accountStyle,
-                          ),
-                          GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          SignupScreen()));
-                            },
-                            child: Text(
-                              "Create one",
-                              style: createStyle,
+    return WillPopScope(
+      onWillPop: () async {
+        final timediff = DateTime.now().difference(backButtonTimePressed);
+        final isExitWarning = timediff >= Duration(seconds: 2);
+        backButtonTimePressed = DateTime.now();
+
+        if (isExitWarning) {
+          Fluttertoast.showToast(msg: 'Press back again to exit.');
+          return false;
+        } else {
+          Fluttertoast.cancel();
+          return true;
+        }
+      },
+      child: Scaffold(
+        backgroundColor: Colors.grey.shade900,
+        body: Center(
+          child: SingleChildScrollView(
+            child: Container(
+              color: Colors.grey.shade900,
+              child: Padding(
+                padding: const EdgeInsets.all(36.0),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: <Widget>[
+                      SizedBox(
+                          height: 100,
+                          child: Image.asset(
+                            'assets/samplelogo.png',
+                            fit: BoxFit.contain,
+                          )),
+                      const SizedBox(height: 45),
+                      buildUsername,
+                      const SizedBox(height: 25),
+                      buildPassword,
+                      const SizedBox(height: 35),
+                      loginButton,
+                      const SizedBox(height: 15),
+                      Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            const Text("Don't have an account? ",
+                              style: accountStyle,
                             ),
-                          )
-                        ])
-                  ],
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            SignupScreen()));
+                              },
+                              child: Text(
+                                "Create one",
+                                style: createStyle,
+                              ),
+                            )
+                          ])
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -227,15 +244,15 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   // login function
-  void signIn(String email, String password) async {
+  void signIn(String usrname, String password) async {
     db.getConnection().then((conn) {
-      String sql = 'SELECT * FROM Guidance_system.users WHERE username="$email";';
+      String sql = 'SELECT * FROM Guidance_system.users WHERE username="$usrname";';
       conn.query(sql).then((results) {
         var users = results.toList();
         // 0 - id ; 1 - username ; 2 - password ; 3 - userlevel
         if (users.isNotEmpty) {
           //userId = users[0];
-          if (email == users[0][1] && password == users[0][2]) {
+          if (usrname == users[0][1] && password == users[0][2]) {
             userId = users[0][0];
             username = users[0][1];
             userLevel = users[0][3];

@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/src/material/divider.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
@@ -34,6 +35,9 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  // double press back button to exit app
+  DateTime backButtonTimePressed = DateTime.now();
+
   final ScrollController _scrollController = ScrollController();
   List<String> items = [];
   // bool connWebsocket = false;
@@ -188,7 +192,7 @@ class _HomeScreenState extends State<HomeScreen> {
       child: RaisedButton(
         elevation: 5,
         onPressed: () {
-          Navigator.push(context, MaterialPageRoute(builder: (context) => log.LoginScreen()));
+          Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => log.LoginScreen()), (route) => false);
         },
         padding: EdgeInsets.all(10),
         shape: RoundedRectangleBorder(
