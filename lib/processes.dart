@@ -55,10 +55,35 @@ transferData(String path) async {
       var upU = row[6];
       var downU = row[7];
       var lidar = row[8];
+
+
       String sql = 'INSERT INTO Guidance_system.sensors (user_id, time, distance, direction, leftUltrasonic, rightUltrasonic, upUltrasonic, downUltrasonic, lidar) VALUES ($userId, "$time", $distance, "$direction", $leftU, $rightU, $upU, $downU, $lidar);';
       conn.query(sql);
+
     }
     Fluttertoast.showToast(msg: "Data uploaded!");
     conn.close();
   });
 }
+
+
+// bool checker(int user,String time) {
+//   bool exist = true;
+//   db.getConnection().then((conn){
+//     String sql = 'SELECT activity_id FROM Guidance_system.sensors WHERE user_id=$user AND time=$time;';
+//     conn.query(sql).then((results) {
+//       var check = results.toList();
+//       // if check is empty, there are no duplicates
+//       if (check.isEmpty) {
+//         exist = true;
+//       } else {
+//         exist = false;
+//       }
+//     });
+//     conn.close();
+//   });
+//   return exist;
+// }
+
+
+

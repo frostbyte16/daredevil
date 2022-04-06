@@ -1,9 +1,9 @@
 import 'dart:io';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter/src/material/divider.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:intl/intl.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:flutter/widgets.dart';
 import 'package:csv/csv.dart';
@@ -35,9 +35,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  // double press back button to exit app
-  DateTime backButtonTimePressed = DateTime.now();
-
   final ScrollController _scrollController = ScrollController();
   List<String> items = [];
   // bool connWebsocket = false;
@@ -56,7 +53,6 @@ class _HomeScreenState extends State<HomeScreen> {
     initalizeCsv();
     super.initState();
     _sensorData = getSensorData();
-    //ledstatus = false; // initially ledstatus is off so its FALSE
     webSocketConnected = false; // initially connection status is "NO" so its FALSE
 
     Future.delayed(Duration.zero,() async {
@@ -121,7 +117,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
         // other data based on time and sensor data
         date = DateTime.now();
-        now = "${date.hour}:${date.minute}:${date.second}";
+        now = DateFormat.Hms().format(date);
 
         distance = getDistance(newLeft, newRight);
         direction = getDirection(newLeft, newRight, newUp, newDown);
