@@ -50,7 +50,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void initState() {
-    initalizeCsv();
+    initializeCsv();
     super.initState();
     _sensorData = getSensorData();
     webSocketConnected = false; // initially connection status is "NO" so its FALSE
@@ -565,7 +565,7 @@ generateCsv() async {
   Fluttertoast.showToast(msg: "CSV created");
 }
 
-initalizeCsv() async {
+initializeCsv() async {
   List<List<dynamic>> temp = [];
   String csvData = ListToCsvConverter().convert(temp);
   final String directory = (await getApplicationSupportDirectory()).path;

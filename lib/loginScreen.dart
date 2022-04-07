@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'adminScreen.dart';
 import 'mysql.dart';
 import 'signupScreen.dart';
 import 'homeScreen.dart';
@@ -258,8 +259,14 @@ class _LoginScreenState extends State<LoginScreen> {
             userLevel = users[0][3];
             print('Login Success');
             Fluttertoast.showToast(msg: "Login successful.");
-            Navigator.of(context).pushReplacement(
-                MaterialPageRoute(builder: (context) => HomeScreen()));
+            if(userLevel=="user"){
+              Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(builder: (context) => HomeScreen()));
+            } else {
+              Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(builder: (context) => AdminScreen()));
+            }
+
           } else {
             print('Incorrect username/password');
             Fluttertoast.showToast(msg: "Incorrect username/password.");
