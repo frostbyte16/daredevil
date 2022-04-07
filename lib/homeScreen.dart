@@ -130,20 +130,12 @@ class _HomeScreenState extends State<HomeScreen> {
         dataArray.add(sData(
             now,
             distance.toString(),
-            direction,
-            leftSensor,
-            rightSensor,
-            upSensor,
-            downSensor)
+            direction)
         );
 
         _time.add(now);
         _distance.add(distance.toString());
         _direction.add(direction);
-        _sensor1.add(leftSensor);
-        _sensor2.add(rightSensor);
-        _sensor3.add(upSensor);
-        _sensor4.add(downSensor);
 
         setState(() {
           dataArray.toSet();
@@ -414,46 +406,6 @@ Widget dataGrid (BuildContext context) {
                 style: dataGridHeaderStyle,
                 overflow: TextOverflow.ellipsis,
               ))),
-      GridColumn(
-          columnName: 'sensor1',
-          label: Container(
-              padding: EdgeInsets.symmetric(horizontal: 16.0),
-              alignment: Alignment.centerLeft,
-              child: Text(
-                'Sensor 1',
-                style: dataGridHeaderStyle,
-                overflow: TextOverflow.ellipsis,
-              ))),
-      GridColumn(
-          columnName: 'sensor2',
-          label: Container(
-              padding: EdgeInsets.symmetric(horizontal: 16.0),
-              alignment: Alignment.centerLeft,
-              child: Text(
-                'Sensor 2',
-                style: dataGridHeaderStyle,
-                overflow: TextOverflow.ellipsis,
-              ))),
-      GridColumn(
-          columnName: 'sensor3',
-          label: Container(
-              padding: EdgeInsets.symmetric(horizontal: 16.0),
-              alignment: Alignment.centerLeft,
-              child: Text(
-                'Sensor 3',
-                style: dataGridHeaderStyle,
-                overflow: TextOverflow.ellipsis,
-              ))),
-      GridColumn(
-          columnName: 'sensor4',
-          label: Container(
-              padding: EdgeInsets.symmetric(horizontal: 16.0),
-              alignment: Alignment.centerLeft,
-              child: Text(
-                'Sensor 4',
-                style: dataGridHeaderStyle,
-                overflow: TextOverflow.ellipsis,
-              ))),
     ],
     gridLinesVisibility: GridLinesVisibility.both,
     headerGridLinesVisibility: GridLinesVisibility.both,
@@ -490,8 +442,8 @@ class SensorDataSource extends DataGridSource{
 
   @override
   Future<void> handleRefresh() async {
-    await Future.delayed(Duration(seconds: 2));
-    _addMoreRows(_sensorData, 15);
+    await Future.delayed(Duration(seconds: 5));
+    _addMoreRows(_sensorData, 10);
     buildDataGridRows();
     notifyListeners();
   }
@@ -502,10 +454,6 @@ class SensorDataSource extends DataGridSource{
       DataGridCell<String>(columnName: 'time', value: dataGridRow.time),
       DataGridCell<String>(columnName: 'distance', value: dataGridRow.distance),
       DataGridCell<String>(columnName: 'direction', value: dataGridRow.direction),
-      DataGridCell<String>(columnName: 'sensor1', value: dataGridRow.sensor1),
-      DataGridCell<String>(columnName: 'sensor2', value: dataGridRow.sensor2),
-      DataGridCell<String>(columnName: 'sensor3', value: dataGridRow.sensor3),
-      DataGridCell<String>(columnName: 'sensor4', value: dataGridRow.sensor4),
     ]))
         .toList();
   }
@@ -518,10 +466,6 @@ class SensorDataSource extends DataGridSource{
         _time[index],
         _distance[index],
         _direction[index],
-        _sensor1[index],
-        _sensor2[index],
-        _sensor3[index],
-        _sensor4[index],
       ));
     }
   }
@@ -530,20 +474,12 @@ class SensorDataSource extends DataGridSource{
 List<String> _time = <String>[];
 List<String> _distance = <String>[];
 List<String> _direction = <String>[];
-List<String> _sensor1 = <String>[];
-List<String> _sensor2 = <String>[];
-List<String> _sensor3 = <String>[];
-List<String> _sensor4 = <String>[];
 
 class sData {
-  sData(this.time, this.distance, this.direction, this.sensor1, this.sensor2, this.sensor3, this.sensor4);
+  sData(this.time, this.distance, this.direction);
   String time;
   String distance;
   String direction;
-  String sensor1;
-  String sensor2;
-  String sensor3;
-  String sensor4;
 }
 
 List<sData> getSensorData() {

@@ -232,8 +232,8 @@ class SensorDataSource extends DataGridSource{
 
   @override
   Future<void> handleRefresh() async {
-    await Future.delayed(Duration(seconds: 2));
-    _addMoreRows(_sensorData, 15);
+    await Future.delayed(Duration(seconds: 5));
+    _addMoreRows(_sensorData, 10);
     buildDataGridRows();
     notifyListeners();
   }
@@ -352,5 +352,6 @@ void retrieveData() async{
     });
     conn.close();
   });
+  Fluttertoast.showToast(msg: "Data received done");
 }
 
