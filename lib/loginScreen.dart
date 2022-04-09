@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'adminScreen.dart';
 import 'mysql.dart';
 import 'signupScreen.dart';
@@ -12,6 +13,8 @@ import 'styles.dart';
 var userId, username, userLevel;
 
 class LoginScreen extends StatefulWidget {
+  const LoginScreen({Key? key}) : super(key: key);
+
   @override
   _LoginScreenState createState() => _LoginScreenState();
 
@@ -29,8 +32,8 @@ class _LoginScreenState extends State<LoginScreen> {
   var db = new Mysql();
 
   // editing controller
-  final TextEditingController usernameController = new TextEditingController();
-  final TextEditingController passwordController = new TextEditingController();
+  final usernameController = new TextEditingController();
+  final passwordController = new TextEditingController();
 
   // firebase
   // final _auth = FirebaseAuth.instance;
@@ -39,26 +42,25 @@ class _LoginScreenState extends State<LoginScreen> {
   String? errorMessage;
 
   // keep user logged in
-  // late SharedPreferences prefdata;
-  // late bool newuser;
+  late SharedPreferences prefdata;
+  late bool newuser;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-
-    // userLoginCheck();
+    userLoginCheck();
   }
 
   // keep user logged in
   void userLoginCheck() async {
-    // prefdata = await SharedPreferences.getInstance();
-    // newuser = (prefdata.getBool('login') ?? true);
-    // print(newuser);
-    // //
-    // if (newuser == false) {
-    //   Navigator.pushReplacement(context, new MaterialPageRoute(builder: (context) => HomeScreen()));
-    // }
+    prefdata = await SharedPreferences.getInstance();
+    newuser = (prefdata.getBool('login') ?? true);
+
+    print(newuser);
+    if (newuser == false) {
+      Navigator.pushReplacement(context, new MaterialPageRoute(builder: (context) => HomeScreen()));
+    }
   }
 
   @override
@@ -151,13 +153,16 @@ class _LoginScreenState extends State<LoginScreen> {
             .width,
         onPressed: () {
           // getSql();
-          String usrname = usernameController.text;
+          String username = usernameController.text;
           String userpassword = passwordController.text;
+          int userid = userId;
 
-          if (usrname != '' && userpassword != '') {
-            // print('Successful.');
-            // prefdata.setBool('login', false);
-            // prefdata.setString('username', usrname);
+          if (username != '' && userpassword != '') {
+            print('Successful.');
+            prefdata.setBool('login', false);
+            prefdata.setString('username', username);
+            prefdata.setInt('userid', userid);
+
             signIn(usernameController.text, passwordController.text);
           } else {
             Fluttertoast.showToast(msg: "Enter missing login credentials.");
@@ -245,15 +250,15 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   // login function
-  void signIn(String usrname, String password) async {
+  void signIn(String username, String password) async {
     db.getConnection().then((conn) {
-      String sql = 'SELECT * FROM Guidance_system.users WHERE username="$usrname";';
+      String sql = 'SELECT * FROM Guidance_system.users WHERE username="$username";';
       conn.query(sql).then((results) {
         var users = results.toList();
         // 0 - id ; 1 - username ; 2 - password ; 3 - userlevel
         if (users.isNotEmpty) {
           //userId = users[0];
-          if (usrname == users[0][1] && password == users[0][2]) {
+          if (username == users[0][1] && password == users[0][2]) {
             userId = users[0][0];
             username = users[0][1];
             userLevel = users[0][3];

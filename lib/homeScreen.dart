@@ -8,6 +8,7 @@ import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:flutter/widgets.dart';
 import 'package:csv/csv.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:web_socket_channel/io.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 import 'package:syncfusion_flutter_core/theme.dart';
@@ -35,6 +36,10 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  // keep user logged in
+  late SharedPreferences prefdata;
+  late String username;
+
   final ScrollController _scrollController = ScrollController();
   List<String> items = [];
   // bool connWebsocket = false;
@@ -84,6 +89,15 @@ class _HomeScreenState extends State<HomeScreen> {
       //   transferData(truePath);
       // }
 
+    });
+
+    initial();
+  }
+
+  void initial() async {
+    prefdata = await SharedPreferences.getInstance();
+    setState(() {
+      username = prefdata.getString('username')!;
     });
   }
 
@@ -179,8 +193,10 @@ class _HomeScreenState extends State<HomeScreen> {
       width: double.infinity,
       child: RaisedButton(
         elevation: 5,
-        onPressed: () {
-          Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => log.LoginScreen()), (route) => false);
+        onPressed: () async {
+          SharedPreferences prefdata = await SharedPreferences.getInstance();
+          prefdata.setBool('login', true);
+          Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => const log.LoginScreen()), (route) => false);
         },
         padding: EdgeInsets.all(10),
         shape: RoundedRectangleBorder(
@@ -224,7 +240,7 @@ class _HomeScreenState extends State<HomeScreen> {
       backgroundColor: Colors.grey.shade900,
       appBar: AppBar(
         title: const Text(
-          "Komori",
+          'Komori',
           style: headerStyle,
         ),
         backgroundColor: Colors.green.shade900,
@@ -248,7 +264,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       children: [
                         SizedBox(height: 10),
                         Text(
-                          log.username,
+                          '${username}',
                           textAlign: TextAlign.center,
                           style: profileUserStyle,
                         ),
