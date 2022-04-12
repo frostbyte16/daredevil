@@ -31,6 +31,8 @@ var truePath;
 // var db = Mysql();
 
 class HomeScreen extends StatefulWidget {
+  const HomeScreen({Key? key}) : super(key: key);
+
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
@@ -51,7 +53,9 @@ class _HomeScreenState extends State<HomeScreen> {
   // get sensor data
   // late bool ledstatus; //boolean value to track LED status, if its ON or OFF
   late IOWebSocketChannel channel;
-  late bool webSocketConnected; //boolean value to track if WebSocket is connected
+  late bool webSocketConnected;
+
+  //boolean value to track if WebSocket is connected
 
   @override
   void initState() {
@@ -63,8 +67,6 @@ class _HomeScreenState extends State<HomeScreen> {
     Future.delayed(Duration.zero,() async {
       channelconnect(); // connect to WebSocket wth NodeMCU
     });
-
-    super.initState();
 
     // check internet connectivity
     InternetConnectionChecker().onStatusChange.listen((status) {
@@ -92,6 +94,8 @@ class _HomeScreenState extends State<HomeScreen> {
     });
 
     initial();
+
+    super.initState();
   }
 
   void initial() async {
@@ -188,17 +192,16 @@ class _HomeScreenState extends State<HomeScreen> {
   // system ui
   Widget buildLogoutBtn() {
     return Container(
-      padding: EdgeInsets.symmetric(vertical: 3),
+      padding: const EdgeInsets.symmetric(vertical: 3),
       alignment: Alignment.center,
       width: double.infinity,
       child: RaisedButton(
         elevation: 5,
-        onPressed: () async {
-          SharedPreferences prefdata = await SharedPreferences.getInstance();
+        onPressed: () {
           prefdata.setBool('login', true);
           Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => const log.LoginScreen()), (route) => false);
         },
-        padding: EdgeInsets.all(10),
+        padding: const EdgeInsets.all(10),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
         ),
@@ -213,7 +216,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget buildUpload() {
     return Container(
-      padding: EdgeInsets.symmetric(vertical: 3),
+      padding: const EdgeInsets.symmetric(vertical: 3),
       alignment: Alignment.center,
       width: double.infinity,
       child: RaisedButton(
@@ -221,7 +224,7 @@ class _HomeScreenState extends State<HomeScreen> {
         onPressed: () {
           transferData(truePath);
         },
-        padding: EdgeInsets.all(10),
+        padding: const EdgeInsets.all(10),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
         ),
@@ -262,23 +265,23 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     body: Column( //User Activity Log
                       children: [
-                        SizedBox(height: 10),
+                        const SizedBox(height: 10),
                         Text(
-                          '${username}',
+                          '$username',
                           textAlign: TextAlign.center,
                           style: profileUserStyle,
                         ),
-                        SizedBox(height: 5),
+                        const SizedBox(height: 5),
                         Text(
                           'User ID: ${log.userId}',
                           textAlign: TextAlign.center,
                           style: profileIdStyle,
                         ),
-                        SizedBox(height: 5),
+                        const SizedBox(height: 5),
                         buildUpload(),
-                        SizedBox(height: 5),
+                        const SizedBox(height: 5),
                         buildLogoutBtn(),
-                        Divider(
+                        const Divider(
                           height: 25,
                           color: Colors.white,
                           thickness: 1,
@@ -338,12 +341,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 shape: BoxShape.circle,
               ),
             ),
-            Container(
-              child: Center(
-                child: Image.asset(
-                  'assets/phone-vibrate.png',
-                  width: 60,
-                ),
+            Center(
+              child: Image.asset(
+                'assets/phone-vibrate.png',
+                width: 60,
               ),
             ),
             Column(

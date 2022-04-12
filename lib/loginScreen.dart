@@ -155,13 +155,11 @@ class _LoginScreenState extends State<LoginScreen> {
           // getSql();
           String username = usernameController.text;
           String userpassword = passwordController.text;
-          int userid = userId;
 
           if (username != '' && userpassword != '') {
             print('Successful.');
             prefdata.setBool('login', false);
             prefdata.setString('username', username);
-            prefdata.setInt('userid', userid);
 
             signIn(usernameController.text, passwordController.text);
           } else {
@@ -230,7 +228,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                     context,
                                     MaterialPageRoute(
                                         builder: (context) =>
-                                            SignupScreen()));
+                                            const SignupScreen()));
                               },
                               child: Text(
                                 "Create one",
