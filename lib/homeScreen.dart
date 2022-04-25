@@ -137,6 +137,7 @@ class _HomeScreenState extends State<HomeScreen> {
         date = DateTime.now();
         now = DateFormat.Hms().format(date);
 
+        // change something here to limit the capacity of the system to treat things as objects
         distance = getDistance(newLeft, newRight);
         direction = getDirection(newLeft, newRight, newUp, newDown);
 

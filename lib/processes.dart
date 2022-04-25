@@ -19,16 +19,26 @@ double getDistance(double x, double y){
 
 String getDirection(double l, double r, double u, double d){
   var dir = '';
+  // will change upon further testing
   if (u>d){
     dir = 'Lower ';
   } else {
     dir = 'Upper ';
   }
-  if (l>r){
+
+  if (l>=30 && l<=150 && r>=30 && r<=150){
+    dir = dir + 'Middle';
+  } else if (r>=30 && r<=150){
     dir = dir + 'Right';
-  } else {
+  } else if (l>=30 && l<=150){
     dir = dir + 'Left';
   }
+
+  // if (l>r){
+  //   dir = dir + 'Right';
+  // } else {
+  //   dir = dir + 'Left';
+  // }
   return dir;
 }
 
