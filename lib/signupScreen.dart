@@ -17,8 +17,6 @@ class SignupScreen extends StatefulWidget {
 }
 
 class _SignupScreenState extends State<SignupScreen> {
-
-
   // string for displaying the error Message
   String? errorMessage;
 
@@ -30,7 +28,6 @@ class _SignupScreenState extends State<SignupScreen> {
 
   @override
   Widget build(BuildContext context) {
-
     // username field
     final buildUsername = TextFormField(
       autofocus: false,
@@ -53,14 +50,10 @@ class _SignupScreenState extends State<SignupScreen> {
       decoration: InputDecoration(
         fillColor: Colors.white,
         filled: true,
-        prefixIcon: Icon(
-            Icons.account_circle,
-            color: Colors.green.shade900),
+        prefixIcon: Icon(Icons.account_circle, color: Colors.green.shade900),
         contentPadding: const EdgeInsets.fromLTRB(20, 15, 20, 15),
         hintText: "Username",
-        border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10)
-        ),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
       ),
     );
 
@@ -130,9 +123,7 @@ class _SignupScreenState extends State<SignupScreen> {
           borderRadius: BorderRadius.circular(10),
         ),
       ),
-      style: const TextStyle(
-          fontFamily: 'Tahoma'
-      ),
+      style: const TextStyle(fontFamily: 'Tahoma'),
     );
 
     // confirm password field
@@ -160,9 +151,7 @@ class _SignupScreenState extends State<SignupScreen> {
           borderRadius: BorderRadius.circular(10),
         ),
       ),
-      style: const TextStyle(
-          fontFamily: 'Tahoma'
-      ),
+      style: const TextStyle(fontFamily: 'Tahoma'),
     );
 
     //signup button
@@ -174,8 +163,10 @@ class _SignupScreenState extends State<SignupScreen> {
         padding: const EdgeInsets.fromLTRB(20, 15, 20, 15),
         minWidth: MediaQuery.of(context).size.width,
         onPressed: () {
-          if (passwordEditingController.text == cpasswordEditingController.text){
-            signUp(usernameEditingController.text, passwordEditingController.text);
+          if (passwordEditingController.text ==
+              cpasswordEditingController.text) {
+            signUp(
+                usernameEditingController.text, passwordEditingController.text);
           } else {
             Fluttertoast.showToast(msg: "Passwords do not match");
           }
@@ -188,8 +179,7 @@ class _SignupScreenState extends State<SignupScreen> {
               fontFamily: 'Bebas Neue',
               color: Colors.white,
               letterSpacing: 3,
-              fontWeight: FontWeight.bold
-          ),
+              fontWeight: FontWeight.bold),
         ),
       ),
     );
@@ -237,25 +227,25 @@ class _SignupScreenState extends State<SignupScreen> {
                     Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
-                          const Text("Already have an account? ",
+                          const Text(
+                            "Already have an account? ",
                             style: TextStyle(
-                                fontFamily: 'Tahoma',
-                                color: Colors.white
-                            ),),
+                                fontFamily: 'Tahoma', color: Colors.white),
+                          ),
                           GestureDetector(
                             onTap: () {
                               Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => const LoginScreen()));
+                                      builder: (context) =>
+                                          const LoginScreen()));
                             },
                             child: Text(
                               "Sign In",
                               style: TextStyle(
                                   color: Colors.blue.shade700,
                                   fontWeight: FontWeight.bold,
-                                  fontFamily: 'Tahoma'
-                              ),
+                                  fontFamily: 'Tahoma'),
                             ),
                           )
                         ])
@@ -268,9 +258,11 @@ class _SignupScreenState extends State<SignupScreen> {
       ),
     );
   }
+
   void signUp(String username, String password) async {
     db.getConnection().then((conn) {
-      String sql = 'SELECT username FROM Guidance_system.users WHERE username="$username";';
+      String sql =
+          'SELECT username FROM Guidance_system.users WHERE username="$username";';
       conn.query(sql).then((results) {
         var users = results.toList();
         if (users.isEmpty) {
@@ -283,9 +275,10 @@ class _SignupScreenState extends State<SignupScreen> {
     });
   }
 
-  void insertToDatabase(String username, String password){
+  void insertToDatabase(String username, String password) {
     db.getConnection().then((conn) {
-      String sql = 'INSERT INTO Guidance_system.users (username, password, user_level) VALUES ("$username", "$password", "user")';
+      String sql =
+          'INSERT INTO Guidance_system.users (username, password, user_level) VALUES ("$username", "$password", "user")';
       conn.query(sql);
       Fluttertoast.showToast(msg: "Account created successfully");
       conn.close();
@@ -293,6 +286,6 @@ class _SignupScreenState extends State<SignupScreen> {
     Navigator.pushAndRemoveUntil(
         (context),
         MaterialPageRoute(builder: (context) => HomeScreen()),
-            (route) => false);
+        (route) => false);
   }
 }

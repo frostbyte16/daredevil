@@ -5,40 +5,34 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'mysql.dart';
 import 'homeScreen.dart';
 
-
 // Transfer of data from csv
 // Connection of flutter to microcontroller
-List<List<dynamic>> newData =[];
+List<List<dynamic>> newData = [];
 // initialize database
 var db = Mysql();
 var poggers;
 
-double getDistance(double x, double y){
+double getDistance(double x, double y) {
   return x + y;
 }
 
-String getDirection(double l, double r, double u, double d){
+String getDirection(double l, double r, double u, double d) {
   var dir = '';
   // will change upon further testing
-  if (u>d){
+  if (u > d) {
     dir = 'Lower ';
   } else {
     dir = 'Upper ';
   }
 
-  if (l>=30 && l<=150 && r>=30 && r<=150){
+  if (l >= 30 && l <= 150 && r >= 30 && r <= 150) {
     dir = dir + 'Middle';
-  } else if (r>=30 && r<=150){
+  } else if (r >= 30 && r <= 150) {
     dir = dir + 'Right';
-  } else if (l>=30 && l<=150){
+  } else if (l >= 30 && l <= 150) {
     dir = dir + 'Left';
   }
 
-  // if (l>r){
-  //   dir = dir + 'Right';
-  // } else {
-  //   dir = dir + 'Left';
-  // }
   return dir;
 }
 
@@ -47,8 +41,8 @@ Future<List<List<dynamic>>> loadCsvData(String path) async {
   return await csvFile
       .transform(utf8.decoder)
       .transform(
-    CsvToListConverter(),
-  )
+        CsvToListConverter(),
+      )
       .toList();
 }
 
@@ -57,7 +51,7 @@ transferData(String path) async {
   Fluttertoast.showToast(msg: "Uploading data...");
   newData = await loadCsvData(path);
   db.getConnection().then((conn) async {
-    for (var row in newData){
+    for (var row in newData) {
       poggers = row;
       var userId = row[0];
       var time = row[1];
@@ -75,9 +69,9 @@ transferData(String path) async {
       //   conn.query(sql);
       // }
 
-      String sql = 'INSERT INTO Guidance_system.sensors (user_id, time, distance, direction, leftUltrasonic, rightUltrasonic, upUltrasonic, downUltrasonic, lidar) VALUES ($userId, "$time", $distance, "$direction", $leftU, $rightU, $upU, $downU, $lidar);';
+      String sql =
+          'INSERT INTO Guidance_system.sensors (user_id, time, distance, direction, leftUltrasonic, rightUltrasonic, upUltrasonic, downUltrasonic, lidar) VALUES ($userId, "$time", $distance, "$direction", $leftU, $rightU, $upU, $downU, $lidar);';
       conn.query(sql);
-
     }
     conn.close();
   });
