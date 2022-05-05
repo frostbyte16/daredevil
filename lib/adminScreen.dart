@@ -18,7 +18,7 @@ class AdminScreen extends StatefulWidget {
 
 class _AdminScreenState extends State<AdminScreen> {
   @override
-  void initState(){
+  void initState() {
     _sensorData = getSensorData();
   }
 
@@ -34,12 +34,9 @@ class _AdminScreenState extends State<AdminScreen> {
           borderRadius: BorderRadius.circular(15),
         ),
         color: Colors.green.shade900,
-        child: Text(
+        child: const Text(
           'Logout',
-          style: TextStyle(
-              color: Colors.white,
-              fontFamily: 'Tahoma'
-          ),
+          style: btnStyle,
         ),
       ),
     );
@@ -56,7 +53,8 @@ class _AdminScreenState extends State<AdminScreen> {
         ),
         backgroundColor: Colors.green.shade900,
       ),
-      body: Column( //User Activity Log
+      body: Column(
+        //User Activity Log
         children: [
           SizedBox(height: 10),
           Text(
@@ -75,33 +73,35 @@ class _AdminScreenState extends State<AdminScreen> {
           ),
           Expanded(
               child: Padding(
-                //flex: 1,
-                child: SfDataGridTheme(
-                  data: SfDataGridThemeData(
-                    headerColor: Colors.cyan,
-                  ),
-                  child: dataGrid(context),
-                ),
-                padding: const EdgeInsets.only(left: 10, right: 10),
-              )
-            //padding: EdgeInsets.only(left: 10),
-          ),
+            //flex: 1,
+            child: SfDataGridTheme(
+              data: SfDataGridThemeData(
+                headerColor: Colors.cyan,
+              ),
+              child: dataGrid(context),
+            ),
+            padding: const EdgeInsets.only(left: 10, right: 10),
+          )
+              //padding: EdgeInsets.only(left: 10),
+              ),
         ],
       ),
     );
   }
 }
 
-Future<Null>getRefresh() async{
+Future<Null> getRefresh() async {
   await Future.delayed(Duration(seconds: 3));
 }
 
 List<sData> _sensorData = <sData>[];
 
-Widget dataGrid (BuildContext context) {
+Widget dataGrid(BuildContext context) {
   return SfDataGrid(
     allowPullToRefresh: true,
-    columnWidthMode: (dataArray.isEmpty == false)?ColumnWidthMode.auto:ColumnWidthMode.none,
+    columnWidthMode: (dataArray.isEmpty == false)
+        ? ColumnWidthMode.auto
+        : ColumnWidthMode.none,
     source: _sensorDataSource,
     frozenColumnsCount: 1,
     isScrollbarAlwaysShown: true,
@@ -204,8 +204,8 @@ Widget dataGrid (BuildContext context) {
 
 SensorDataSource _sensorDataSource = SensorDataSource();
 
-class SensorDataSource extends DataGridSource{
-  SensorDataSource(){
+class SensorDataSource extends DataGridSource {
+  SensorDataSource() {
     buildDataGridRows();
   }
 
@@ -218,16 +218,17 @@ class SensorDataSource extends DataGridSource{
   DataGridRowAdapter? buildRow(DataGridRow row) {
     return DataGridRowAdapter(
         cells: row.getCells().map<Widget>((dataGridCell) {
-          return Container(
-              alignment: (dataGridCell.columnName == 'user_id')? Alignment.centerRight
-                  : Alignment.centerLeft,
-              padding: EdgeInsets.symmetric(horizontal: 16.0),
-              child: Text(
-                dataGridCell.value.toString(),
-                overflow: TextOverflow.ellipsis,
-                style: dataGridDataStyle,
-              ));
-        }).toList());
+      return Container(
+          alignment: (dataGridCell.columnName == 'user_id')
+              ? Alignment.centerRight
+              : Alignment.centerLeft,
+          padding: EdgeInsets.symmetric(horizontal: 16.0),
+          child: Text(
+            dataGridCell.value.toString(),
+            overflow: TextOverflow.ellipsis,
+            style: dataGridDataStyle,
+          ));
+    }).toList());
   }
 
   @override
@@ -242,16 +243,24 @@ class SensorDataSource extends DataGridSource{
     retrieveData();
     dataGridRows = _sensorData
         .map<DataGridRow>((dataGridRow) => DataGridRow(cells: [
-      DataGridCell<String>(columnName: 'user_id', value: dataGridRow.user_id),
-      DataGridCell<String>(columnName: 'time', value: dataGridRow.time),
-      DataGridCell<String>(columnName: 'distance', value: dataGridRow.distance),
-      DataGridCell<String>(columnName: 'direction', value: dataGridRow.direction),
-      DataGridCell<String>(columnName: 'sensor1', value: dataGridRow.sensor1),
-      DataGridCell<String>(columnName: 'sensor2', value: dataGridRow.sensor2),
-      DataGridCell<String>(columnName: 'sensor3', value: dataGridRow.sensor3),
-      DataGridCell<String>(columnName: 'sensor4', value: dataGridRow.sensor4),
-      DataGridCell<String>(columnName: 'lidar', value: dataGridRow.lidar),
-    ]))
+              DataGridCell<String>(
+                  columnName: 'user_id', value: dataGridRow.user_id),
+              DataGridCell<String>(columnName: 'time', value: dataGridRow.time),
+              DataGridCell<String>(
+                  columnName: 'distance', value: dataGridRow.distance),
+              DataGridCell<String>(
+                  columnName: 'direction', value: dataGridRow.direction),
+              DataGridCell<String>(
+                  columnName: 'sensor1', value: dataGridRow.sensor1),
+              DataGridCell<String>(
+                  columnName: 'sensor2', value: dataGridRow.sensor2),
+              DataGridCell<String>(
+                  columnName: 'sensor3', value: dataGridRow.sensor3),
+              DataGridCell<String>(
+                  columnName: 'sensor4', value: dataGridRow.sensor4),
+              DataGridCell<String>(
+                  columnName: 'lidar', value: dataGridRow.lidar),
+            ]))
         .toList();
   }
 
@@ -285,7 +294,8 @@ List<String> _sensor4 = <String>[];
 List<String> _lidar = <String>[];
 
 class sData {
-  sData(this.user_id, this.time, this.distance, this.direction, this.sensor1, this.sensor2, this.sensor3, this.sensor4, this.lidar);
+  sData(this.user_id, this.time, this.distance, this.direction, this.sensor1,
+      this.sensor2, this.sensor3, this.sensor4, this.lidar);
   String user_id;
   String time;
   String distance;
@@ -302,14 +312,15 @@ List<sData> getSensorData() {
 }
 
 // get data from database
-void retrieveData() async{
+void retrieveData() async {
   Fluttertoast.showToast(msg: "Retrieving data...");
   db.getConnection().then((conn) {
-    String sql = 'SELECT user_id, time, distance, direction, leftUltrasonic, rightUltrasonic, upUltrasonic, downUltrasonic, lidar FROM Guidance_system.sensors;';
+    String sql =
+        'SELECT user_id, time, distance, direction, leftUltrasonic, rightUltrasonic, upUltrasonic, downUltrasonic, lidar FROM Guidance_system.sensors;';
     conn.query(sql).then((results) {
       var sensData = results.toList();
       var size = sensData.length;
-      for(var i = 0; i<size; i++){
+      for (var i = 0; i < size; i++) {
         var userId = sensData[i][0].toString();
         var time = sensData[i][1].toString();
         var date = DateTime.parse(time);
@@ -322,17 +333,8 @@ void retrieveData() async{
         var downU = sensData[i][7].toString();
         var lidar = sensData[i][8].toString();
 
-        dataArray.add(sData(
-            userId,
-            formattedDate,
-            distance,
-            direction,
-            leftU,
-            rightU,
-            upU,
-            downU,
-            lidar)
-        );
+        dataArray.add(sData(userId, formattedDate, distance, direction, leftU,
+            rightU, upU, downU, lidar));
 
         _userid.add(userId);
         _time.add(formattedDate);
@@ -354,4 +356,3 @@ void retrieveData() async{
   });
   Fluttertoast.showToast(msg: "Data received done");
 }
-

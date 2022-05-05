@@ -1,9 +1,7 @@
-import 'dart:ui';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'adminScreen.dart';
 import 'mysql.dart';
 import 'signupScreen.dart';
@@ -11,14 +9,14 @@ import 'homeScreen.dart';
 import 'styles.dart';
 
 var userId, username, userLevel;
+// logged in variable
+bool loggedIn = false;
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
 
   @override
   _LoginScreenState createState() => _LoginScreenState();
-
-
 }
 
 class _LoginScreenState extends State<LoginScreen> {
@@ -35,6 +33,9 @@ class _LoginScreenState extends State<LoginScreen> {
   final usernameController = new TextEditingController();
   final passwordController = new TextEditingController();
 
+  // connectivity result variables
+  bool hasInternet = false;
+
   // firebase
   // final _auth = FirebaseAuth.instance;
 
@@ -50,6 +51,13 @@ class _LoginScreenState extends State<LoginScreen> {
     // TODO: implement initState
     super.initState();
     userLoginCheck();
+
+    // check internet connectivity
+    InternetConnectionChecker().onStatusChange.listen((status) {
+      final hasInternet = status == InternetConnectionStatus.connected;
+
+      setState(() => this.hasInternet = hasInternet);
+    });
   }
 
   // keep user logged in
@@ -57,9 +65,9 @@ class _LoginScreenState extends State<LoginScreen> {
     prefdata = await SharedPreferences.getInstance();
     newuser = (prefdata.getBool('login') ?? true);
 
-    print(newuser);
     if (newuser == false) {
-      Navigator.pushReplacement(context, new MaterialPageRoute(builder: (context) => HomeScreen()));
+      Navigator.pushReplacement(
+          context, new MaterialPageRoute(builder: (context) => HomeScreen()));
     }
   }
 
@@ -96,9 +104,7 @@ class _LoginScreenState extends State<LoginScreen> {
       decoration: InputDecoration(
         fillColor: Colors.white,
         filled: true,
-        border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10)
-        ),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
         contentPadding: const EdgeInsets.fromLTRB(20, 15, 20, 15),
         prefixIcon: Icon(
           Icons.account_circle,
@@ -147,10 +153,7 @@ class _LoginScreenState extends State<LoginScreen> {
       color: Colors.green.shade900,
       child: MaterialButton(
         padding: const EdgeInsets.fromLTRB(20, 15, 20, 15),
-        minWidth: MediaQuery
-            .of(context)
-            .size
-            .width,
+        minWidth: MediaQuery.of(context).size.width,
         onPressed: () {
           // getSql();
           String username = usernameController.text;
@@ -219,12 +222,13 @@ class _LoginScreenState extends State<LoginScreen> {
                       Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
-                            const Text("Don't have an account? ",
+                            const Text(
+                              "Don't have an account? ",
                               style: accountStyle,
                             ),
                             GestureDetector(
                               onTap: () {
-                                Navigator.push(
+                                Navigator.pushReplacement(
                                     context,
                                     MaterialPageRoute(
                                         builder: (context) =>
@@ -235,7 +239,30 @@ class _LoginScreenState extends State<LoginScreen> {
                                 style: createStyle,
                               ),
                             )
-                          ])
+                          ]),
+                      const SizedBox(height: 20),
+                      if (hasInternet == false) ...[
+                        Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              const Text(
+                                "Don't have internet? ",
+                                style: accountStyle,
+                              ),
+                              GestureDetector(
+                                onTap: () {
+                                  loggedIn = false;
+                                  Navigator.of(context).pushReplacement(
+                                      MaterialPageRoute(
+                                          builder: (context) => HomeScreen()));
+                                },
+                                child: Text(
+                                  "Use offline",
+                                  style: createStyle,
+                                ),
+                              )
+                            ])
+                      ],
                     ],
                   ),
                 ),
@@ -250,7 +277,8 @@ class _LoginScreenState extends State<LoginScreen> {
   // login function
   void signIn(String username, String password) async {
     db.getConnection().then((conn) {
-      String sql = 'SELECT * FROM Guidance_system.users WHERE username="$username";';
+      String sql =
+          'SELECT * FROM Guidance_system.users WHERE username="$username";';
       conn.query(sql).then((results) {
         var users = results.toList();
         // 0 - id ; 1 - username ; 2 - password ; 3 - userlevel
@@ -262,15 +290,17 @@ class _LoginScreenState extends State<LoginScreen> {
             userLevel = users[0][3];
             print('Login Success');
             Fluttertoast.showToast(msg: "Login successful.");
-            if(userLevel=="user"){
+            if (userLevel == "user") {
+              loggedIn = true;
               Navigator.of(context).pushReplacement(
                   MaterialPageRoute(builder: (context) => HomeScreen()));
             } else {
+              loggedIn = true;
               Navigator.of(context).pushReplacement(
                   MaterialPageRoute(builder: (context) => AdminScreen()));
             }
-
           } else {
+            loggedIn = false;
             print('Incorrect username/password');
             Fluttertoast.showToast(msg: "Incorrect username/password.");
           }
