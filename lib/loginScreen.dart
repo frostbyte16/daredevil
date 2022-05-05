@@ -207,9 +207,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: <Widget>[
                       SizedBox(
-                          height: 100,
+                          height: 150,
                           child: Image.asset(
-                            'assets/samplelogo.png',
+                            'assets/komori.png',
                             fit: BoxFit.contain,
                           )),
                       const SizedBox(height: 45),
@@ -228,11 +228,9 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                             GestureDetector(
                               onTap: () {
-                                Navigator.pushReplacement(
-                                    context,
+                                Navigator.of(context).push(
                                     MaterialPageRoute(
-                                        builder: (context) =>
-                                            const SignupScreen()));
+                                        builder: (context) => SignupScreen()));
                               },
                               child: Text(
                                 "Create one",
