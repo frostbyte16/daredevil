@@ -58,7 +58,7 @@ class _AdminScreenState extends State<AdminScreen> {
         children: [
           SizedBox(height: 10),
           Text(
-            log.username,
+            '${log.username}',
             textAlign: TextAlign.center,
             style: profileUserStyle,
           ),
