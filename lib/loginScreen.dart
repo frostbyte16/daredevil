@@ -8,7 +8,7 @@ import 'signupScreen.dart';
 import 'homeScreen.dart';
 import 'styles.dart';
 
-var userId, username, userLevel;
+var userId, user_name, userLevel;
 // logged in variable
 bool loggedIn = false;
 
@@ -67,7 +67,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
     if (newuser == false) {
       Navigator.pushReplacement(
-          context, new MaterialPageRoute(builder: (context) => HomeScreen()));
+          context, MaterialPageRoute(builder: (context) => const HomeScreen()));
     }
   }
 
@@ -121,7 +121,7 @@ class _LoginScreenState extends State<LoginScreen> {
       controller: passwordController,
       obscureText: true,
       validator: (value) {
-        RegExp regex = new RegExp(r'^.{6,}$');
+        RegExp regex = RegExp(r'^.{6,}$');
         if (value!.isEmpty) {
           return ("Please enter your password.");
         }
@@ -181,7 +181,7 @@ class _LoginScreenState extends State<LoginScreen> {
     return WillPopScope(
       onWillPop: () async {
         final timediff = DateTime.now().difference(backButtonTimePressed);
-        final isExitWarning = timediff >= Duration(seconds: 2);
+        final isExitWarning = timediff >= const Duration(seconds: 2);
         backButtonTimePressed = DateTime.now();
 
         if (isExitWarning) {
@@ -228,9 +228,9 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                             GestureDetector(
                               onTap: () {
-                                Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                        builder: (context) => SignupScreen()));
+                                Navigator.of(context).push(MaterialPageRoute(
+                                    builder: (context) =>
+                                        const SignupScreen()));
                               },
                               child: Text(
                                 "Create one",
@@ -239,28 +239,28 @@ class _LoginScreenState extends State<LoginScreen> {
                             )
                           ]),
                       const SizedBox(height: 20),
-                      if (hasInternet == false) ...[
-                        Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: <Widget>[
-                              const Text(
-                                "Don't have internet? ",
-                                style: accountStyle,
-                              ),
-                              GestureDetector(
-                                onTap: () {
-                                  loggedIn = false;
-                                  Navigator.of(context).pushReplacement(
-                                      MaterialPageRoute(
-                                          builder: (context) => HomeScreen()));
-                                },
-                                child: Text(
-                                  "Use offline",
-                                  style: createStyle,
-                                ),
-                              )
-                            ])
-                      ],
+                      // if (hasInternet == false) ...[
+                      //   Row(
+                      //       mainAxisAlignment: MainAxisAlignment.center,
+                      //       children: <Widget>[
+                      //         const Text(
+                      //           "Don't have internet? ",
+                      //           style: accountStyle,
+                      //         ),
+                      //         GestureDetector(
+                      //           onTap: () {
+                      //             loggedIn = false;
+                      //             Navigator.of(context).pushReplacement(
+                      //                 MaterialPageRoute(
+                      //                     builder: (context) => const HomeScreen()));
+                      //           },
+                      //           child: Text(
+                      //             "Use offline",
+                      //             style: createStyle,
+                      //           ),
+                      //         )
+                      //       ])
+                      // ],
                     ],
                   ),
                 ),
@@ -284,26 +284,23 @@ class _LoginScreenState extends State<LoginScreen> {
           //userId = users[0];
           if (username == users[0][1] && password == users[0][2]) {
             userId = users[0][0];
-            username = users[0][1];
+            user_name = users[0][1];
             userLevel = users[0][3];
-            print('Login Success');
             Fluttertoast.showToast(msg: "Login successful.");
             if (userLevel == "user") {
-              loggedIn = true;
+              //loggedIn = true;
               Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(builder: (context) => HomeScreen()));
+                  MaterialPageRoute(builder: (context) => const HomeScreen()));
             } else {
-              loggedIn = true;
+              //loggedIn = true;
               Navigator.of(context).pushReplacement(
                   MaterialPageRoute(builder: (context) => AdminScreen()));
             }
           } else {
-            loggedIn = false;
-            print('Incorrect username/password');
+            //loggedIn = false;
             Fluttertoast.showToast(msg: "Incorrect username/password.");
           }
         } else {
-          print('User does not exist');
           Fluttertoast.showToast(msg: "User does not exist.");
         }
       });

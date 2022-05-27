@@ -16,10 +16,10 @@ double getDistance(double x, double y) {
   return x + y;
 }
 
-String getDirection(double l, double r, double u, double d) {
+String getDirection(double l, double r, double m) {
   var dir = '';
   // will change upon further testing
-  if (u > d) {
+  if (m > m) {
     dir = 'Lower ';
   } else {
     dir = 'Upper ';
@@ -37,11 +37,11 @@ String getDirection(double l, double r, double u, double d) {
 }
 
 Future<List<List<dynamic>>> loadCsvData(String path) async {
-  final csvFile = new File(path).openRead();
+  final csvFile = File(path).openRead();
   return await csvFile
       .transform(utf8.decoder)
       .transform(
-        CsvToListConverter(),
+        const CsvToListConverter(),
       )
       .toList();
 }
@@ -60,8 +60,7 @@ transferData(String path) async {
       var leftU = row[4];
       var rightU = row[5];
       var upU = row[6];
-      var downU = row[7];
-      var lidar = row[8];
+      var lidar = row[7];
 
       // bool noDuplicates = await checker(userId, time);
       // if(noDuplicates==true){
@@ -70,7 +69,7 @@ transferData(String path) async {
       // }
 
       String sql =
-          'INSERT INTO Guidance_system.sensors (user_id, time, distance, direction, leftUltrasonic, rightUltrasonic, upUltrasonic, downUltrasonic, lidar) VALUES ($userId, "$time", $distance, "$direction", $leftU, $rightU, $upU, $downU, $lidar);';
+          'INSERT INTO Guidance_system.sensors (user_id, time, distance, direction, leftUltrasonic, rightUltrasonic, upUltrasonic, downUltrasonic, lidar) VALUES ($userId, "$time", $distance, "$direction", $leftU, $rightU, $upU, $lidar);';
       conn.query(sql);
     }
     conn.close();

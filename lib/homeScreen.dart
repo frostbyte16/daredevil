@@ -21,8 +21,8 @@ List<sData> dataArray = [];
 var index = 0;
 var now, date;
 var dirX, dirY, direction, distance;
-var leftSensor, rightSensor, upSensor, downSensor, lidarSensor, splitted;
-var newLeft, newRight, newUp, newDown, newLidar;
+var leftSensor, rightSensor, midSensor, lidarSensor, splitted;
+var newLeft, newRight, newMid, newLidar;
 var truePath;
 
 // initialize database
@@ -141,48 +141,51 @@ class _HomeScreenState extends State<HomeScreen> {
           splitted = sensorData.split(',');
           leftSensor = splitted[0];
           rightSensor = splitted[1];
-          upSensor = splitted[2];
-          downSensor = splitted[3];
+          midSensor = splitted[2];
+          lidarSensor = splitted[3];
 
           // convert sensor data to double
           newLeft = double.parse(leftSensor);
           newRight = double.parse(rightSensor);
-          newUp = double.parse(upSensor);
-          newDown = double.parse(downSensor);
+          newMid = double.parse(midSensor);
+          newLidar = double.parse(lidarSensor);
 
           // other data based on time and sensor data
           date = DateTime.now();
           now = DateFormat.Hms().format(date);
 
           // change something here to limit the capacity of the system to treat things as objects
-          distance = getDistance(newLeft, newRight);
-          direction = getDirection(newLeft, newRight, newUp, newDown);
+          distance = newLidar;
+          direction = getDirection(newLeft, newRight, newMid);
 
           // Push sensor data to csv file for offline processes
-          //["UserID", "Time", "Distance", "Direction", "Sensor1", "Sensor2", "Sensor3", "Sensor4", "LiDAR"]
-          data.add([
-            log.userId,
-            date,
-            distance,
-            direction,
-            newLeft,
-            newRight,
-            newUp,
-            newDown,
-            newLidar
-          ]);
-          generateCsv();
+          //["UserID", "Time", "Distance", "Direction", "Sensor1", "Sensor2", "Sensor3", "LiDAR"]
+          if (direction == 'Upper ') {
+          } else {
+            // pushData();
+            data.add([
+              log.userId,
+              date,
+              distance,
+              direction,
+              newLeft,
+              newRight,
+              newMid,
+              newLidar
+            ]);
+            generateCsv();
 
-          dataArray.add(sData(now, distance.toString(), direction));
+            dataArray.add(sData(now, distance.toString(), direction));
 
-          _time.add(now);
-          _distance.add(distance.toString());
-          _direction.add(direction);
-
-          setState(() {
-            dataArray.toSet();
-            dataArray.toList();
-          });
+            _time.add(now);
+            _distance.add(distance.toString());
+            _direction.add(direction);
+            
+            setState(() {
+              dataArray.toSet();
+              dataArray.toList();
+            });
+          }
         },
         onDone: () {
           // if WebSocket is disconnected
@@ -203,11 +206,6 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> sendcmd(String cmd) async {
     if (webSocketConnected == true) {
       Fluttertoast.showToast(msg: "Connected to the Websocket");
-      // if(ledstatus == false && cmd != "poweron" && cmd!= "poweroff"){
-      //   print("Send the valid command");
-      // }else{
-      //   channel.sink.add(cmd); //sending Command to NodeMCU
-      // }
     } else {
       channelconnect();
       Fluttertoast.showToast(msg: "Websocket is not connected.");
@@ -409,7 +407,7 @@ class _HomeScreenState extends State<HomeScreen> {
 }
 
 Future<Null> getRefresh() async {
-  await Future.delayed(Duration(seconds: 3));
+  await Future.delayed(const Duration(seconds: 3));
 }
 
 List<sData> _sensorData = <sData>[];
@@ -428,7 +426,7 @@ Widget dataGrid(BuildContext context) {
       GridColumn(
           columnName: 'time',
           label: Container(
-              padding: EdgeInsets.symmetric(horizontal: 16.0),
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
               alignment: Alignment.centerLeft,
               child: Text(
                 'Time',
@@ -562,4 +560,8 @@ initializeCsv() async {
   final File file = File(path);
   await file.writeAsString(csvData);
   Fluttertoast.showToast(msg: "CSV created");
+}
+
+pushData() {
+  
 }

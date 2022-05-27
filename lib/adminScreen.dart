@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
 import 'package:syncfusion_flutter_core/theme.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -17,21 +18,42 @@ class AdminScreen extends StatefulWidget {
 }
 
 class _AdminScreenState extends State<AdminScreen> {
+  // keep user logged in
+  late SharedPreferences prefdata;
+  late String username;
+
   @override
-  void initState() {
+  void initState(){
     _sensorData = getSensorData();
+    initial();
+    print(log.userId);
+    print(log.user_name);
+    print(log.userLevel);
+  }
+
+  void initial() async {
+    prefdata = await SharedPreferences.getInstance();
+    setState(() {
+      username = prefdata.getString('username')!;
+    });
   }
 
   Widget buildLogoutBtn() {
     return Container(
-      padding: EdgeInsets.symmetric(vertical: 3, horizontal: 150),
+      padding: const EdgeInsets.symmetric(vertical: 3),
+      alignment: Alignment.center,
       width: double.infinity,
       child: RaisedButton(
         elevation: 5,
-        onPressed: () => print("Logout pressed"),
-        padding: EdgeInsets.all(10),
+        onPressed: () {
+          prefdata.setBool('login', true);
+          Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(builder: (context) => const log.LoginScreen()),
+                  (route) => false);
+        },
+        padding: const EdgeInsets.all(10),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(15),
+          borderRadius: BorderRadius.circular(10),
         ),
         color: Colors.green.shade900,
         child: const Text(
@@ -53,18 +75,17 @@ class _AdminScreenState extends State<AdminScreen> {
         ),
         backgroundColor: Colors.green.shade900,
       ),
-      body: Column(
-        //User Activity Log
+      body: Column( //User Activity Log
         children: [
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           Text(
-            '${log.username}',
+            '${log.user_name}',
             textAlign: TextAlign.center,
             style: profileUserStyle,
           ),
-          SizedBox(height: 5),
+          const SizedBox(height: 5),
           buildLogoutBtn(),
-          Divider(
+          const Divider(
             height: 25,
             color: Colors.white,
             thickness: 1,
@@ -73,35 +94,34 @@ class _AdminScreenState extends State<AdminScreen> {
           ),
           Expanded(
               child: Padding(
-            //flex: 1,
-            child: SfDataGridTheme(
-              data: SfDataGridThemeData(
-                headerColor: Colors.cyan,
-              ),
-              child: dataGrid(context),
-            ),
-            padding: const EdgeInsets.only(left: 10, right: 10),
-          )
-              //padding: EdgeInsets.only(left: 10),
-              ),
+                //flex: 1,
+                child: SfDataGridTheme(
+                  data: SfDataGridThemeData(
+                    headerColor: Colors.cyan,
+                  ),
+                  child: dataGrid(context),
+                ),
+                padding: const EdgeInsets.only(left: 10, right: 10),
+              )
+            //padding: EdgeInsets.only(left: 10),
+          ),
         ],
       ),
     );
   }
 }
 
-Future<Null> getRefresh() async {
-  await Future.delayed(Duration(seconds: 3));
+Future<Null>getRefresh() async{
+  await Future.delayed(const Duration(seconds: 3));
 }
 
 List<sData> _sensorData = <sData>[];
 
-Widget dataGrid(BuildContext context) {
+Widget dataGrid (BuildContext context) {
   return SfDataGrid(
+    allowColumnsResizing: true,
     allowPullToRefresh: true,
-    columnWidthMode: (dataArray.isEmpty == false)
-        ? ColumnWidthMode.auto
-        : ColumnWidthMode.none,
+    columnWidthMode: (dataArray.isEmpty == false)?ColumnWidthMode.auto:ColumnWidthMode.none,
     source: _sensorDataSource,
     frozenColumnsCount: 1,
     isScrollbarAlwaysShown: true,
@@ -109,9 +129,9 @@ Widget dataGrid(BuildContext context) {
       GridColumn(
           columnName: 'user_id',
           label: Container(
-              padding: EdgeInsets.symmetric(horizontal: 16.0),
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
               alignment: Alignment.centerLeft,
-              child: Text(
+              child: const Text(
                 'User',
                 style: dataGridHeaderStyle,
                 overflow: TextOverflow.ellipsis,
@@ -119,9 +139,9 @@ Widget dataGrid(BuildContext context) {
       GridColumn(
           columnName: 'time',
           label: Container(
-              padding: EdgeInsets.symmetric(horizontal: 16.0),
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
               alignment: Alignment.centerLeft,
-              child: Text(
+              child: const Text(
                 'Time',
                 style: dataGridHeaderStyle,
                 overflow: TextOverflow.ellipsis,
@@ -129,9 +149,9 @@ Widget dataGrid(BuildContext context) {
       GridColumn(
           columnName: 'distance',
           label: Container(
-              padding: EdgeInsets.symmetric(horizontal: 16.0),
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
               alignment: Alignment.centerLeft,
-              child: Text(
+              child: const Text(
                 'Distance',
                 style: dataGridHeaderStyle,
                 overflow: TextOverflow.ellipsis,
@@ -139,9 +159,9 @@ Widget dataGrid(BuildContext context) {
       GridColumn(
           columnName: 'direction',
           label: Container(
-              padding: EdgeInsets.symmetric(horizontal: 16.0),
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
               alignment: Alignment.centerLeft,
-              child: Text(
+              child: const Text(
                 'Direction',
                 style: dataGridHeaderStyle,
                 overflow: TextOverflow.ellipsis,
@@ -149,9 +169,9 @@ Widget dataGrid(BuildContext context) {
       GridColumn(
           columnName: 'sensor1',
           label: Container(
-              padding: EdgeInsets.symmetric(horizontal: 16.0),
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
               alignment: Alignment.centerLeft,
-              child: Text(
+              child: const Text(
                 'Left Sensor',
                 style: dataGridHeaderStyle,
                 overflow: TextOverflow.ellipsis,
@@ -159,9 +179,9 @@ Widget dataGrid(BuildContext context) {
       GridColumn(
           columnName: 'sensor2',
           label: Container(
-              padding: EdgeInsets.symmetric(horizontal: 16.0),
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
               alignment: Alignment.centerLeft,
-              child: Text(
+              child: const Text(
                 'Right Sensor',
                 style: dataGridHeaderStyle,
                 overflow: TextOverflow.ellipsis,
@@ -169,29 +189,19 @@ Widget dataGrid(BuildContext context) {
       GridColumn(
           columnName: 'sensor3',
           label: Container(
-              padding: EdgeInsets.symmetric(horizontal: 16.0),
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
               alignment: Alignment.centerLeft,
-              child: Text(
-                'Up Sensor',
-                style: dataGridHeaderStyle,
-                overflow: TextOverflow.ellipsis,
-              ))),
-      GridColumn(
-          columnName: 'sensor4',
-          label: Container(
-              padding: EdgeInsets.symmetric(horizontal: 16.0),
-              alignment: Alignment.centerLeft,
-              child: Text(
-                'Down Sensor',
+              child: const Text(
+                'Middle Sensor',
                 style: dataGridHeaderStyle,
                 overflow: TextOverflow.ellipsis,
               ))),
       GridColumn(
           columnName: 'lidar',
           label: Container(
-              padding: EdgeInsets.symmetric(horizontal: 16.0),
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
               alignment: Alignment.centerLeft,
-              child: Text(
+              child: const Text(
                 'LiDAR',
                 style: dataGridHeaderStyle,
                 overflow: TextOverflow.ellipsis,
@@ -204,8 +214,8 @@ Widget dataGrid(BuildContext context) {
 
 SensorDataSource _sensorDataSource = SensorDataSource();
 
-class SensorDataSource extends DataGridSource {
-  SensorDataSource() {
+class SensorDataSource extends DataGridSource{
+  SensorDataSource(){
     buildDataGridRows();
   }
 
@@ -218,22 +228,21 @@ class SensorDataSource extends DataGridSource {
   DataGridRowAdapter? buildRow(DataGridRow row) {
     return DataGridRowAdapter(
         cells: row.getCells().map<Widget>((dataGridCell) {
-      return Container(
-          alignment: (dataGridCell.columnName == 'user_id')
-              ? Alignment.centerRight
-              : Alignment.centerLeft,
-          padding: EdgeInsets.symmetric(horizontal: 16.0),
-          child: Text(
-            dataGridCell.value.toString(),
-            overflow: TextOverflow.ellipsis,
-            style: dataGridDataStyle,
-          ));
-    }).toList());
+          return Container(
+              alignment: (dataGridCell.columnName == 'user_id')? Alignment.centerRight
+                  : Alignment.centerLeft,
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Text(
+                dataGridCell.value.toString(),
+                overflow: TextOverflow.ellipsis,
+                style: dataGridDataStyle,
+              ));
+        }).toList());
   }
 
   @override
   Future<void> handleRefresh() async {
-    await Future.delayed(Duration(seconds: 5));
+    await Future.delayed(const Duration(seconds: 5));
     _addMoreRows(_sensorData, 10);
     buildDataGridRows();
     notifyListeners();
@@ -243,24 +252,15 @@ class SensorDataSource extends DataGridSource {
     retrieveData();
     dataGridRows = _sensorData
         .map<DataGridRow>((dataGridRow) => DataGridRow(cells: [
-              DataGridCell<String>(
-                  columnName: 'user_id', value: dataGridRow.user_id),
-              DataGridCell<String>(columnName: 'time', value: dataGridRow.time),
-              DataGridCell<String>(
-                  columnName: 'distance', value: dataGridRow.distance),
-              DataGridCell<String>(
-                  columnName: 'direction', value: dataGridRow.direction),
-              DataGridCell<String>(
-                  columnName: 'sensor1', value: dataGridRow.sensor1),
-              DataGridCell<String>(
-                  columnName: 'sensor2', value: dataGridRow.sensor2),
-              DataGridCell<String>(
-                  columnName: 'sensor3', value: dataGridRow.sensor3),
-              DataGridCell<String>(
-                  columnName: 'sensor4', value: dataGridRow.sensor4),
-              DataGridCell<String>(
-                  columnName: 'lidar', value: dataGridRow.lidar),
-            ]))
+      DataGridCell<String>(columnName: 'user_id', value: dataGridRow.user_id),
+      DataGridCell<String>(columnName: 'time', value: dataGridRow.time),
+      DataGridCell<String>(columnName: 'distance', value: dataGridRow.distance),
+      DataGridCell<String>(columnName: 'direction', value: dataGridRow.direction),
+      DataGridCell<String>(columnName: 'sensor1', value: dataGridRow.sensor1),
+      DataGridCell<String>(columnName: 'sensor2', value: dataGridRow.sensor2),
+      DataGridCell<String>(columnName: 'sensor3', value: dataGridRow.sensor3),
+      DataGridCell<String>(columnName: 'lidar', value: dataGridRow.lidar),
+    ]))
         .toList();
   }
 
@@ -276,7 +276,6 @@ class SensorDataSource extends DataGridSource {
         _sensor1[index],
         _sensor2[index],
         _sensor3[index],
-        _sensor4[index],
         _lidar[index],
       ));
     }
@@ -290,12 +289,10 @@ List<String> _direction = <String>[];
 List<String> _sensor1 = <String>[];
 List<String> _sensor2 = <String>[];
 List<String> _sensor3 = <String>[];
-List<String> _sensor4 = <String>[];
 List<String> _lidar = <String>[];
 
 class sData {
-  sData(this.user_id, this.time, this.distance, this.direction, this.sensor1,
-      this.sensor2, this.sensor3, this.sensor4, this.lidar);
+  sData(this.user_id, this.time, this.distance, this.direction, this.sensor1, this.sensor2, this.sensor3, this.lidar);
   String user_id;
   String time;
   String distance;
@@ -303,7 +300,6 @@ class sData {
   String sensor1;
   String sensor2;
   String sensor3;
-  String sensor4;
   String lidar;
 }
 
@@ -312,15 +308,14 @@ List<sData> getSensorData() {
 }
 
 // get data from database
-void retrieveData() async {
+void retrieveData() async{
   Fluttertoast.showToast(msg: "Retrieving data...");
   db.getConnection().then((conn) {
-    String sql =
-        'SELECT user_id, time, distance, direction, leftUltrasonic, rightUltrasonic, upUltrasonic, downUltrasonic, lidar FROM Guidance_system.sensors;';
+    String sql = 'SELECT user_id, time, distance, direction, leftUltrasonic, rightUltrasonic, upUltrasonic, lidar FROM Guidance_system.sensors;';
     conn.query(sql).then((results) {
       var sensData = results.toList();
       var size = sensData.length;
-      for (var i = 0; i < size; i++) {
+      for(var i = 0; i<size; i++){
         var userId = sensData[i][0].toString();
         var time = sensData[i][1].toString();
         var date = DateTime.parse(time);
@@ -329,21 +324,29 @@ void retrieveData() async {
         var direction = sensData[i][3].toString();
         var leftU = sensData[i][4].toString();
         var rightU = sensData[i][5].toString();
-        var upU = sensData[i][6].toString();
-        var downU = sensData[i][7].toString();
-        var lidar = sensData[i][8].toString();
+        var midU = sensData[i][6].toString();
+        var lidar = sensData[i][7].toString();
 
-        dataArray.add(sData(userId, formattedDate, distance, direction, leftU,
-            rightU, upU, downU, lidar));
+        // change time to formattedDate if needed
+
+        dataArray.add(sData(
+            userId,
+            time,
+            distance,
+            direction,
+            leftU,
+            rightU,
+            midU,
+            lidar)
+        );
 
         _userid.add(userId);
-        _time.add(formattedDate);
+        _time.add(time);
         _distance.add(distance);
         _direction.add(direction);
         _sensor1.add(leftU);
         _sensor2.add(rightU);
-        _sensor3.add(upU);
-        _sensor4.add(downU);
+        _sensor3.add(midU);
         _lidar.add(lidar);
 
         // setState(() {

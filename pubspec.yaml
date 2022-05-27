@@ -46,7 +46,7 @@ dependencies:
   internet_connection_checker: ^0.0.1+1
 
   # other dependencies
-  syncfusion_flutter_datagrid: ^19.4.47
+  syncfusion_flutter_datagrid: ^20.1.56
   fluttertoast: any
   flutter_tts: ^3.3.3
   intl: ^0.17.0
