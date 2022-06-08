@@ -311,7 +311,7 @@ List<sData> getSensorData() {
 void retrieveData() async{
   Fluttertoast.showToast(msg: "Retrieving data...");
   db.getConnection().then((conn) {
-    String sql = 'SELECT user_id, time, distance, direction, leftUltrasonic, rightUltrasonic, upUltrasonic, lidar FROM Guidance_system.sensors;';
+    String sql = 'SELECT user_id, time, distance, direction, leftUltrasonic, rightUltrasonic, midUltrasonic, lidar FROM Guidance_system.sensors;';
     conn.query(sql).then((results) {
       var sensData = results.toList();
       var size = sensData.length;
