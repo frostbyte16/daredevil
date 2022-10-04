@@ -14,6 +14,7 @@ import 'loginScreen.dart';
 import 'processes.dart';
 import 'loginScreen.dart' as log;
 import 'styles.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 
 // declare global variables
 var sensorData = '1';
@@ -27,6 +28,7 @@ var truePath;
 
 // initialize database
 // var db = Mysql();
+final FlutterTts tts = FlutterTts();
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -139,10 +141,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
           // separating received sensor data
           splitted = sensorData.split(',');
-          leftSensor = splitted[0];
+          leftSensor = splitted[3];
           rightSensor = splitted[1];
           midSensor = splitted[2];
-          lidarSensor = splitted[3];
+          lidarSensor = splitted[0];
 
           // convert sensor data to double
           newLeft = double.parse(leftSensor);
@@ -156,7 +158,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
           // change something here to limit the capacity of the system to treat things as objects
           distance = newLidar;
-          direction = getDirection(newLeft, newRight, newMid);
+          direction = getDirection(newLeft, newRight, newMid, newLidar);
+          tts.speak(direction);
 
           // Push sensor data to csv file for offline processes
           //["UserID", "Time", "Distance", "Direction", "Sensor1", "Sensor2", "Sensor3", "LiDAR"]
@@ -180,7 +183,7 @@ class _HomeScreenState extends State<HomeScreen> {
             _time.add(now);
             _distance.add(distance.toString());
             _direction.add(direction);
-            
+
             setState(() {
               dataArray.toSet();
               dataArray.toList();
@@ -562,6 +565,4 @@ initializeCsv() async {
   Fluttertoast.showToast(msg: "CSV created");
 }
 
-pushData() {
-  
-}
+pushData() {}

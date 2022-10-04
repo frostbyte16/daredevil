@@ -16,13 +16,28 @@ double getDistance(double x, double y) {
   return x + y;
 }
 
-String getDirection(double l, double r, double m) {
+String getDirection(double l, double r, double m, double d) {
   var dir = '';
   // will change upon further testing
-  if (m > m) {
-    dir = 'Lower ';
-  } else {
-    dir = 'Upper ';
+  // if (m > m) {
+  //   dir = 'Lower ';
+  // } else {
+  //   dir = 'Upper ';
+  // }
+  if (l <= 75) {
+    dir = 'Near ';
+    if (m >= 30 && m <= 40) {
+      dir = dir + 'Upper ';
+    } else if (m > 40 && m <= 75) {
+      dir = dir + 'Lower ';
+    }
+  } else if (l > 75 && l <= 150) {
+    dir = 'Far ';
+    if (m >= 75 && m <= 85) {
+      dir = dir + 'Upper ';
+    } else if (m > 85 && m <= 100) {
+      dir = dir + 'Lower ';
+    }
   }
 
   if (l >= 30 && l <= 150 && r >= 30 && r <= 150) {
