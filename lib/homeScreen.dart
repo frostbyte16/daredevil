@@ -382,7 +382,8 @@ class _HomeScreenState extends State<HomeScreen> {
               children: [
                 Container(
                   child: Text(
-                    log.loggedIn.toString() + 'WOKEGE',
+                    // log.loggedIn.toString() + 'WOKEGE',
+                    truePath.toString(),
                     //poggers.toString(),
                     //newData.toString(),
                     //'The sensors are detecting objects. Please wait...',

@@ -24,27 +24,27 @@ String getDirection(double l, double r, double m, double d) {
   // } else {
   //   dir = 'Upper ';
   // }
-  if (l <= 75) {
+  if (d <= 100) {
     dir = 'Near ';
-    if (m >= 30 && m <= 40) {
+    if (m >= 0 && m <= 40) {
       dir = dir + 'Upper ';
-    } else if (m > 40 && m <= 75) {
+    } else if (m > 40 && m <= 100) {
       dir = dir + 'Lower ';
     }
-  } else if (l > 75 && l <= 150) {
+  } else if (d > 100 && d <= 400) {
     dir = 'Far ';
-    if (m >= 75 && m <= 85) {
+    if (m > 100 && m <= 120) {
       dir = dir + 'Upper ';
-    } else if (m > 85 && m <= 100) {
+    } else if (m > 120 && m <= 400) {
       dir = dir + 'Lower ';
     }
   }
 
-  if (l >= 30 && l <= 150 && r >= 30 && r <= 150) {
+  if (l >= 0 && l <= 200 && r >= 0 && r <= 200) {
     dir = dir + 'Middle';
-  } else if (r >= 30 && r <= 150) {
+  } else if (r >= 0 && r <= 200) {
     dir = dir + 'Right';
-  } else if (l >= 30 && l <= 150) {
+  } else if (l >= 0 && l <= 200) {
     dir = dir + 'Left';
   }
 
@@ -65,7 +65,7 @@ Future<List<List<dynamic>>> loadCsvData(String path) async {
 transferData(String path) async {
   Fluttertoast.showToast(msg: "Uploading data...");
   newData = await loadCsvData(path);
-  db.getConnection().then((conn) async {
+  db.getConnection().then((conn) {
     for (var row in newData) {
       poggers = row;
       var userId = row[0];
@@ -84,8 +84,9 @@ transferData(String path) async {
       // }
 
       String sql =
-          'INSERT INTO Guidance_system.sensors (user_id, time, distance, direction, leftUltrasonic, rightUltrasonic, midUltrasonic, downUltrasonic, lidar) VALUES ($userId, "$time", $distance, "$direction", $leftU, $rightU, $upU, $lidar);';
+          'INSERT INTO Guidance_system.sensors (user_id, time, distance, direction, leftUltrasonic, rightUltrasonic, midUltrasonic, lidar) VALUES ($userId, "$time", $distance, "$direction", $leftU, $rightU, $upU, $lidar);';
       conn.query(sql);
+      Fluttertoast.showToast(msg: sql);
     }
     conn.close();
   });
