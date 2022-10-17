@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 import 'package:csv/csv.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'mysql.dart';
@@ -16,36 +17,32 @@ double getDistance(double x, double y) {
   return x + y;
 }
 
-String getDirection(double l, double r, double m, double d) {
+String getDirection(double left, double right, double distance) {
   var dir = '';
-  // will change upon further testing
-  // if (m > m) {
-  //   dir = 'Lower ';
-  // } else {
-  //   dir = 'Upper ';
-  // }
-  if (d <= 100) {
+
+  if (distance <= 100) {
     dir = 'Near ';
-    if (m >= 0 && m <= 40) {
+    if (distance >= 0 && distance <= 40) {
       dir = dir + 'Upper ';
-    } else if (m > 40 && m <= 100) {
+    } else if (distance > 40 && distance <= 100) {
       dir = dir + 'Lower ';
     }
-  } else if (d > 100 && d <= 400) {
+  } else if (distance > 100 && distance <= 400) {
     dir = 'Far ';
-    if (m > 100 && m <= 120) {
+    if (distance > 100 && distance <= 120) {
       dir = dir + 'Upper ';
-    } else if (m > 120 && m <= 400) {
+    } else if (distance > 120 && distance <= 400) {
       dir = dir + 'Lower ';
     }
   }
-
-  if (l >= 0 && l <= 200 && r >= 0 && r <= 200) {
-    dir = dir + 'Middle';
-  } else if (r >= 0 && r <= 200) {
-    dir = dir + 'Right';
-  } else if (l >= 0 && l <= 200) {
-    dir = dir + 'Left';
+  if (distance <= 400) {
+    if (left >= 0 && left <= 200 && right >= 0 && right <= 200) {
+      dir = dir + 'Middle';
+    } else if (right >= 0 && right <= 200) {
+      dir = dir + 'Right';
+    } else if (left >= 0 && left <= 200) {
+      dir = dir + 'Left';
+    }
   }
 
   return dir;
@@ -113,5 +110,6 @@ transferData(String path) async {
 //   return exist;
 // }
 
-
-
+double getLowerDist(mid) {
+  return sqrt(pow(mid, 2) - pow(156, 2));
+}

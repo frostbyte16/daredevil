@@ -20,11 +20,13 @@ import 'package:flutter_tts/flutter_tts.dart';
 var sensorData = '1';
 List<sData> dataArray = [];
 var index = 0;
+var sensorInstance = 0;
 var now, date;
 var dirX, dirY, direction, distance;
 var leftSensor, rightSensor, midSensor, lidarSensor, splitted;
 var newLeft, newRight, newMid, newLidar;
 var truePath;
+var midDistance;
 
 // initialize database
 // var db = Mysql();
@@ -136,7 +138,6 @@ class _HomeScreenState extends State<HomeScreen> {
       Fluttertoast.showToast(msg: "Connecting to channel...");
       channel.stream.listen(
         (message) {
-          print(message);
           sensorData = message;
 
           // separating received sensor data
@@ -156,10 +157,23 @@ class _HomeScreenState extends State<HomeScreen> {
           date = DateTime.now();
           now = DateFormat.Hms().format(date);
 
+          // midDistance = sqrt(pow(newMid, 2) - pow(156, 2));
+          // midDistance = getLowerDist(newMid);
+
           // change something here to limit the capacity of the system to treat things as objects
-          distance = newLidar;
-          direction = getDirection(newLeft, newRight, newMid, newLidar);
-          tts.speak(direction);
+          if (newLidar <= newMid) {
+            distance = newLidar;
+          } else {
+            distance = newMid;
+          }
+
+          direction = getDirection(newLeft, newRight, distance);
+          if (sensorInstance == 30) {
+            tts.speak(direction);
+            sensorInstance = 0;
+          } else {
+            sensorInstance = sensorInstance + 1;
+          }
 
           // Push sensor data to csv file for offline processes
           //["UserID", "Time", "Distance", "Direction", "Sensor1", "Sensor2", "Sensor3", "LiDAR"]
@@ -383,7 +397,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 Container(
                   child: Text(
                     // log.loggedIn.toString() + 'WOKEGE',
-                    truePath.toString(),
+                    direction.toString(),
                     //poggers.toString(),
                     //newData.toString(),
                     //'The sensors are detecting objects. Please wait...',
