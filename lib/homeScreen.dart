@@ -26,7 +26,7 @@ var dirX, dirY, direction, distance;
 var leftSensor, rightSensor, midSensor, lidarSensor, splitted;
 var newLeft, newRight, newMid, newLidar;
 var truePath;
-var midDistance;
+var midDistance, lidarDistance, leftDistance, rightDistance;
 
 // initialize database
 // var db = Mysql();
@@ -157,14 +157,17 @@ class _HomeScreenState extends State<HomeScreen> {
           date = DateTime.now();
           now = DateFormat.Hms().format(date);
 
-          // midDistance = sqrt(pow(newMid, 2) - pow(156, 2));
-          // midDistance = getLowerDist(newMid);
+          // gets distance based on sensor detected distance
+          leftDistance = getSideDist(newLeft);
+          rightDistance = getSideDist(newRight);
+          midDistance = getLowerDist(newMid);
+          lidarDistance = getUpperDist(newLidar);
 
           // change something here to limit the capacity of the system to treat things as objects
-          if (newLidar <= newMid) {
-            distance = newLidar;
+          if (lidarDistance <= midDistance) {
+            distance = lidarDistance;
           } else {
-            distance = newMid;
+            distance = midDistance;
           }
 
           direction = getDirection(newLeft, newRight, distance);

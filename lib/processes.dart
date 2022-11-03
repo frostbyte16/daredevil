@@ -13,10 +13,6 @@ List<List<dynamic>> newData = [];
 var db = Mysql();
 var poggers;
 
-double getDistance(double x, double y) {
-  return x + y;
-}
-
 String getDirection(double left, double right, double distance) {
   var dir = '';
 
@@ -110,6 +106,14 @@ transferData(String path) async {
 //   return exist;
 // }
 
-double getLowerDist(mid) {
-  return sqrt(pow(mid, 2) - pow(156, 2));
+double getLowerDist(sensor) {
+  return sensor * cos(40 * (pi / 180));
+}
+
+double getUpperDist(sensor) {
+  return sensor * cos(80 * (pi / 180));
+}
+
+double getSideDist(sensor) {
+  return sensor * cos(60 * (pi / 180));
 }
