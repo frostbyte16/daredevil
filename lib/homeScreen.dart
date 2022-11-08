@@ -173,6 +173,9 @@ class _HomeScreenState extends State<HomeScreen> {
           direction = getDirection(newLeft, newRight, distance);
           if (sensorInstance == 30) {
             tts.speak(direction);
+            if (distance < 30) {
+              tts.speak("About to crash at " + direction);
+            }
             sensorInstance = 0;
           } else {
             sensorInstance = sensorInstance + 1;
