@@ -83,9 +83,7 @@ class _LoginScreenState extends State<LoginScreen> {
       autofocus: false,
       controller: usernameController,
       keyboardType: TextInputType.name,
-      validator: (value) {
-        
-      },
+      validator: (value) {},
       onSaved: (value) {
         usernameController.text = value!;
       },
@@ -153,7 +151,8 @@ class _LoginScreenState extends State<LoginScreen> {
             prefdata.setBool('login', false);
             prefdata.setString('username', username);
 
-            signIn(usernameController.text, passwordController.text);
+            // signIn(usernameController.text, passwordController.text);
+            letMeIn(usernameController.text, passwordController.text);
           } else {
             Fluttertoast.showToast(msg: "Enter missing login credentials.");
           }
@@ -273,5 +272,16 @@ class _LoginScreenState extends State<LoginScreen> {
       });
       conn.close();
     });
+  }
+
+  // function for disabled db
+  void letMeIn(String username, String password) {
+    if (username == 'user' && password == 'user') {
+      Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (context) => const HomeScreen()));
+    } else if (username == 'admin' && password == 'admin') {
+      Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (context) => AdminScreen()));
+    }
   }
 }

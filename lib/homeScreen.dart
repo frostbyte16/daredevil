@@ -82,7 +82,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       TextButton(
                         onPressed: () => Navigator.of(context).pushReplacement(
                             MaterialPageRoute(
-                                builder: (context) => LoginScreen())),
+                                builder: (context) => const LoginScreen())),
                         child: const Text('OK'),
                       ),
                     ],
@@ -157,7 +157,11 @@ class _HomeScreenState extends State<HomeScreen> {
           if (sensorInstance == 30) {
             tts.speak(direction);
             if (distance < 30) {
-              tts.speak("About to crash " + direction);
+              if (direction == 'Front') {
+                tts.speak("About to crash in front");
+              } else {
+                tts.speak("About to crash on your " + direction);
+              }
             }
             sensorInstance = 0;
           } else {

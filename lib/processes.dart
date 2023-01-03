@@ -34,7 +34,7 @@ String getDirection(double left, double right, double distance) {
   // }
   if (distance <= 400) {
     if (left >= 0 && left <= 200 && right >= 0 && right <= 200) {
-      dir = 'In Front';
+      dir = 'Front';
     } else if (right >= 0 && right <= 200) {
       dir = 'Right';
     } else if (left >= 0 && left <= 200) {
