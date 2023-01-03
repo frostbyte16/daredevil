@@ -157,38 +157,35 @@ class _HomeScreenState extends State<HomeScreen> {
           if (sensorInstance == 30) {
             tts.speak(direction);
             if (distance < 30) {
-              tts.speak("About to crash at " + direction);
+              tts.speak("About to crash " + direction);
             }
             sensorInstance = 0;
           } else {
             sensorInstance = sensorInstance + 1;
           }
 
-          if (direction == 'Upper ') {
-          } else {
-            data.add([
-              log.userId,
-              date,
-              distance,
-              direction,
-              newLeft,
-              newRight,
-              newMid,
-              newLidar
-            ]);
-            generateCsv();
+          data.add([
+            log.userId,
+            date,
+            distance,
+            direction,
+            newLeft,
+            newRight,
+            newMid,
+            newLidar
+          ]);
+          generateCsv();
 
-            dataArray.add(sData(now, distance.toString(), direction));
+          dataArray.add(sData(now, distance.toString(), direction));
 
-            _time.add(now);
-            _distance.add(distance.toString());
-            _direction.add(direction);
+          _time.add(now);
+          _distance.add(distance.toString());
+          _direction.add(direction);
 
-            setState(() {
-              dataArray.toSet();
-              dataArray.toList();
-            });
-          }
+          setState(() {
+            dataArray.toSet();
+            dataArray.toList();
+          });
         },
         onDone: () {
           Fluttertoast.showToast(msg: "Web socket is closed");
@@ -380,7 +377,7 @@ class _HomeScreenState extends State<HomeScreen> {
               children: [
                 Container(
                   child: Text(
-                    'Object Detected at ${direction.toString()}.',
+                    'Direction: ${direction.toString()} Distance: ${distance.toString()}',
                     style: hoverStyle,
                   ),
                   margin:

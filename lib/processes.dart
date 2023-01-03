@@ -17,28 +17,28 @@ var poggers;
 String getDirection(double left, double right, double distance) {
   var dir = '';
 
-  if (distance <= 100) {
-    dir = 'Near ';
-    if (distance >= 0 && distance <= 40) {
-      dir = dir + 'Upper ';
-    } else if (distance > 40 && distance <= 100) {
-      dir = dir + 'Lower ';
-    }
-  } else if (distance > 100 && distance <= 400) {
-    dir = 'Far ';
-    if (distance > 100 && distance <= 120) {
-      dir = dir + 'Upper ';
-    } else if (distance > 120 && distance <= 400) {
-      dir = dir + 'Lower ';
-    }
-  }
+  // if (distance <= 100) {
+  //   dir = 'Near ';
+  //   if (distance >= 0 && distance <= 40) {
+  //     dir = dir + 'Upper ';
+  //   } else if (distance > 40 && distance <= 100) {
+  //     dir = dir + 'Lower ';
+  //   }
+  // } else if (distance > 100 && distance <= 400) {
+  //   dir = 'Far ';
+  //   if (distance > 100 && distance <= 120) {
+  //     dir = dir + 'Upper ';
+  //   } else if (distance > 120 && distance <= 400) {
+  //     dir = dir + 'Lower ';
+  //   }
+  // }
   if (distance <= 400) {
     if (left >= 0 && left <= 200 && right >= 0 && right <= 200) {
-      dir = dir + 'Middle';
+      dir = 'In Front';
     } else if (right >= 0 && right <= 200) {
-      dir = dir + 'Right';
+      dir = 'Right';
     } else if (left >= 0 && left <= 200) {
-      dir = dir + 'Left';
+      dir = 'Left';
     }
   }
 
