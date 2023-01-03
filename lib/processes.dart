@@ -9,6 +9,7 @@ import 'homeScreen.dart';
 // Transfer of data from csv
 // Connection of flutter to microcontroller
 List<List<dynamic>> newData = [];
+
 // initialize database
 var db = Mysql();
 var poggers;
@@ -70,41 +71,15 @@ transferData(String path) async {
       var upU = row[6];
       var lidar = row[7];
 
-      // bool noDuplicates = await checker(userId, time);
-      // if(noDuplicates==true){
-      //   String sql = 'INSERT INTO Guidance_system.sensors (user_id, time, distance, direction, leftUltrasonic, rightUltrasonic, midUltrasonic, downUltrasonic, lidar) VALUES ($userId, "$time", $distance, "$direction", $leftU, $rightU, $upU, $downU, $lidar);';
-      //   conn.query(sql);
-      // }
-
       String sql =
           'INSERT INTO Guidance_system.sensors (user_id, time, distance, direction, leftUltrasonic, rightUltrasonic, midUltrasonic, lidar) VALUES ($userId, "$time", $distance, "$direction", $leftU, $rightU, $upU, $lidar);';
       conn.query(sql);
-      Fluttertoast.showToast(msg: sql);
     }
     conn.close();
   });
   Fluttertoast.showToast(msg: "Data uploaded!");
   initializeCsv();
 }
-
-// bool exist = false;
-//
-// Future<bool> checker(int user,String time) async {
-//   db.getConnection().then((conn){
-//     String sql = 'SELECT activity_id FROM Guidance_system.sensors WHERE user_id=$user AND time="$time";';
-//     conn.query(sql).then((results) {
-//       var check = results.toList();
-//       // if check is empty, there are no duplicates
-//       if (check.isEmpty) {
-//         exist = true;
-//       } else {
-//         exist = false;
-//       }
-//     });
-//     conn.close();
-//   });
-//   return exist;
-// }
 
 double getLowerDist(sensor) {
   return sensor * cos(40 * (pi / 180));

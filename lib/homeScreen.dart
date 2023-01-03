@@ -27,9 +27,6 @@ var leftSensor, rightSensor, midSensor, lidarSensor, splitted;
 var newLeft, newRight, newMid, newLidar;
 var truePath;
 var midDistance, lidarDistance, leftDistance, rightDistance;
-
-// initialize database
-// var db = Mysql();
 final FlutterTts tts = FlutterTts();
 
 class HomeScreen extends StatefulWidget {
@@ -46,18 +43,14 @@ class _HomeScreenState extends State<HomeScreen> {
 
   final ScrollController _scrollController = ScrollController();
   List<String> items = [];
-  // bool connWebsocket = false;
 
   // connectivity result variables
   bool hasInternet = false;
   ConnectivityResult connResult = ConnectivityResult.none;
 
   // get sensor data
-  // late bool ledstatus; //boolean value to track LED status, if its ON or OFF
   late IOWebSocketChannel channel;
   late bool webSocketConnected;
-
-  //boolean value to track if WebSocket is connected
 
   @override
   void initState() {
@@ -104,15 +97,8 @@ class _HomeScreenState extends State<HomeScreen> {
       }
       // calls websocket if connectivity changes
       channelconnect();
-
-      // uploads data to database when disconnected to the websocket and connected to the internet
-      // if(connected==false && this.hasInternet==true){
-      //   transferData(truePath);
-      // }
     });
-
     initial();
-
     super.initState();
   }
 
@@ -125,13 +111,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void dispose() {
-    // TODO: implement dispose
     super.dispose();
     _scrollController.dispose();
   }
 
   channelconnect() {
-    // function to connect
     try {
       channel =
           IOWebSocketChannel.connect("ws://192.168.0.1:81"); //channel IP : Port
@@ -163,7 +147,6 @@ class _HomeScreenState extends State<HomeScreen> {
           midDistance = getLowerDist(newMid);
           lidarDistance = getUpperDist(newLidar);
 
-          // change something here to limit the capacity of the system to treat things as objects
           if (lidarDistance <= midDistance) {
             distance = lidarDistance;
           } else {
@@ -181,11 +164,8 @@ class _HomeScreenState extends State<HomeScreen> {
             sensorInstance = sensorInstance + 1;
           }
 
-          // Push sensor data to csv file for offline processes
-          //["UserID", "Time", "Distance", "Direction", "Sensor1", "Sensor2", "Sensor3", "LiDAR"]
           if (direction == 'Upper ') {
           } else {
-            // pushData();
             data.add([
               log.userId,
               date,
@@ -211,7 +191,6 @@ class _HomeScreenState extends State<HomeScreen> {
           }
         },
         onDone: () {
-          // if WebSocket is disconnected
           Fluttertoast.showToast(msg: "Web socket is closed");
           setState(() {
             webSocketConnected = false;
@@ -312,7 +291,6 @@ class _HomeScreenState extends State<HomeScreen> {
                       backgroundColor: Colors.green.shade900,
                     ),
                     body: Column(
-                      //User Activity Log
                       children: [
                         const SizedBox(height: 10),
                         Text(
@@ -402,12 +380,7 @@ class _HomeScreenState extends State<HomeScreen> {
               children: [
                 Container(
                   child: Text(
-                    // log.loggedIn.toString() + 'WOKEGE',
-                    direction.toString(),
-                    //poggers.toString(),
-                    //newData.toString(),
-                    //'The sensors are detecting objects. Please wait...',
-                    //'Left sensor detected object at ${sensorData} cm.',
+                    'Object Detected at ${direction.toString()}.',
                     style: hoverStyle,
                   ),
                   margin:
@@ -436,7 +409,6 @@ Future<Null> getRefresh() async {
 
 List<sData> _sensorData = <sData>[];
 
-// create datagrid widget admin version
 Widget dataGrid(BuildContext context) {
   return SfDataGrid(
     allowPullToRefresh: true,
@@ -561,9 +533,7 @@ List<sData> getSensorData() {
 }
 
 // functions for csv data
-List<List<dynamic>> data = [
-  //["UserID", "Time", "Distance", "Direction", "Sensor1", "Sensor2", "Sensor3", "Sensor4", "LiDAR"]
-];
+List<List<dynamic>> data = [];
 
 generateCsv() async {
   String csvData = ListToCsvConverter().convert(data);
@@ -572,7 +542,6 @@ generateCsv() async {
   truePath = path;
   final File file = File(path);
   await file.writeAsString(csvData);
-  Fluttertoast.showToast(msg: "CSV created");
 }
 
 initializeCsv() async {
@@ -583,7 +552,4 @@ initializeCsv() async {
   truePath = path;
   final File file = File(path);
   await file.writeAsString(csvData);
-  Fluttertoast.showToast(msg: "CSV created");
 }
-
-pushData() {}

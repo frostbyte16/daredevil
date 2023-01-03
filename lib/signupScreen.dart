@@ -33,16 +33,6 @@ class _SignupScreenState extends State<SignupScreen> {
       autofocus: false,
       controller: usernameEditingController,
       keyboardType: TextInputType.name,
-      // validator: (value) {
-      //   RegExp regex = new RegExp(r'^.{5,}$');
-      //   if (value!.isEmpty) {
-      //     return ("Username cannot be empty.");
-      //   }
-      //   if (!regex.hasMatch(value)) {
-      //     return ("Enter valid username. Minimum of 5 characters.");
-      //   }
-      //   return null;
-      // },
       onSaved: (value) {
         usernameEditingController.text = value!;
       },
@@ -57,58 +47,11 @@ class _SignupScreenState extends State<SignupScreen> {
       ),
     );
 
-    // email field
-    // final buildEmail = TextFormField(
-    //   autofocus: false,
-    //   controller: emailEditingController,
-    //   keyboardType: TextInputType.emailAddress,
-    //   validator: (value) {
-    //     if (value!.isEmpty) {
-    //       return ("Please enter your email.");
-    //     }
-    //     // reg expression for email validation
-    //     if (!RegExp("^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+.[a-z]")
-    //         .hasMatch(value)) {
-    //       return ("Please enter a valid email.");
-    //     }
-    //     return null;
-    //   },
-    //   onSaved: (value) {
-    //     emailEditingController.text = value!;
-    //   },
-    //   textInputAction: TextInputAction.next,
-    //   decoration: InputDecoration(
-    //     fillColor: Colors.white,
-    //     filled: true,
-    //     border: OutlineInputBorder(
-    //         borderRadius: BorderRadius.circular(10)
-    //     ),
-    //     contentPadding: const EdgeInsets.fromLTRB(20, 15, 20, 15),
-    //     prefixIcon: Icon(
-    //       Icons.email,
-    //       color: Colors.green.shade900,
-    //     ),
-    //     hintText: 'Email',
-    //   ),
-    //   style: const TextStyle(
-    //       fontFamily: 'Tahoma'
-    //   ),
-    // );
-
     // password field
     final buildPassword = TextFormField(
       autofocus: false,
       controller: passwordEditingController,
       obscureText: true,
-      // validator: (value) {
-      //   RegExp regex = new RegExp(r'^.{6,}$');
-      //   if (value!.isEmpty) {
-      //     return ("Please enter your password.");
-      //   }
-      //   if (!regex.hasMatch(value)) {
-      //     return ("Enter a valid password. Minimum of 6 characters.");
-      //   }
-      // },
       onSaved: (value) {
         passwordEditingController.text = value!;
       },
@@ -131,12 +74,6 @@ class _SignupScreenState extends State<SignupScreen> {
       autofocus: false,
       controller: cpasswordEditingController,
       obscureText: true,
-      // validator: (value) {
-      //   if (cpasswordEditingController.text != passwordEditingController.text) {
-      //     return "Password doesn't match.";
-      //   }
-      //   return null;
-      // },
       onSaved: (value) {
         cpasswordEditingController.text = value!;
       },

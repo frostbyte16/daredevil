@@ -36,9 +36,6 @@ class _LoginScreenState extends State<LoginScreen> {
   // connectivity result variables
   bool hasInternet = false;
 
-  // firebase
-  // final _auth = FirebaseAuth.instance;
-
   // string for displaying the error message
   String? errorMessage;
 
@@ -87,15 +84,7 @@ class _LoginScreenState extends State<LoginScreen> {
       controller: usernameController,
       keyboardType: TextInputType.name,
       validator: (value) {
-        // if (value!.isEmpty) {
-        //   return ("Please enter your username.");
-        // }
-        // // reg expression for username validation
-        // if (!RegExp("^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+.[a-z]")
-        //     .hasMatch(value)) {
-        //   return ("Username already taken.");
-        // }
-        // return null;
+        
       },
       onSaved: (value) {
         usernameController.text = value!;
@@ -239,28 +228,6 @@ class _LoginScreenState extends State<LoginScreen> {
                             )
                           ]),
                       const SizedBox(height: 20),
-                      // if (hasInternet == false) ...[
-                      //   Row(
-                      //       mainAxisAlignment: MainAxisAlignment.center,
-                      //       children: <Widget>[
-                      //         const Text(
-                      //           "Don't have internet? ",
-                      //           style: accountStyle,
-                      //         ),
-                      //         GestureDetector(
-                      //           onTap: () {
-                      //             loggedIn = false;
-                      //             Navigator.of(context).pushReplacement(
-                      //                 MaterialPageRoute(
-                      //                     builder: (context) => const HomeScreen()));
-                      //           },
-                      //           child: Text(
-                      //             "Use offline",
-                      //             style: createStyle,
-                      //           ),
-                      //         )
-                      //       ])
-                      // ],
                     ],
                   ),
                 ),
@@ -307,38 +274,4 @@ class _LoginScreenState extends State<LoginScreen> {
       conn.close();
     });
   }
-
-  // void getSql() async {
-  //   db.getConnection().then((conn){
-  //     String sql = 'SELECT * FROM Guidance_system.users;';
-  //     conn.query(sql).then((results){
-  //
-  //       var users = results.toList(); // [Fields: {id: 100000, username: admin, password: admin, user_level: admin}, Fields: {id: 100001, username: user, password: user, user_level: user}]
-  //       var x = users[0][0]; // id
-  //       var y = users[0][1]; // username
-  //
-  //
-  //       if (users.isNotEmpty){
-  //         print(users);
-  //       } else {
-  //         print('No data available');
-  //       }
-  //
-  //   // print('id= $x');
-  //   // print('username= $y');
-  //   // print('row: $results[0]');
-  //   for(var row in results){
-  //     var id = row[0];
-  //     var username = row[1];
-  //     print('$id = $username');
-  //     setState(() {
-  //       //mail = row[1];
-  //       //print('mail: $mail');
-  //     });
-  //   }
-  //     });
-  //   });
-  //
-  // }
-
 }
